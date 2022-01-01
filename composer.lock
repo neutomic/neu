@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7336021b159b8b7014d16e98b4b37794",
+    "content-hash": "0bd15682b2acdbbaec84958e3eb5a7b5",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1452,57 +1452,6 @@
             "time": "2020-10-14T08:32:19+00:00"
         },
         {
-            "name": "php-standard-library/psalm-plugin",
-            "version": "1.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-standard-library/psalm-plugin.git",
-                "reference": "30993c5e582e616bc3f866cfbada880fbbeed243"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-standard-library/psalm-plugin/zipball/30993c5e582e616bc3f866cfbada880fbbeed243",
-                "reference": "30993c5e582e616bc3f866cfbada880fbbeed243",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.4 || ^8.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.18",
-                "roave/security-advisories": "dev-master",
-                "squizlabs/php_codesniffer": "^3.5",
-                "vimeo/psalm": "^4.6"
-            },
-            "type": "psalm-plugin",
-            "extra": {
-                "psalm": {
-                    "pluginClass": "Psl\\Psalm\\Plugin"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psl\\Psalm\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "azjezz",
-                    "email": "azjezz@protonmail.com"
-                }
-            ],
-            "description": "Psalm plugin for the PHP Standard Library",
-            "support": {
-                "issues": "https://github.com/php-standard-library/psalm-plugin/issues",
-                "source": "https://github.com/php-standard-library/psalm-plugin/tree/1.1.2"
-            },
-            "time": "2022-01-01T18:01:15+00:00"
-        },
-        {
             "name": "phpdocumentor/reflection-common",
             "version": "2.2.0",
             "source": {
@@ -2149,41 +2098,6 @@
                 }
             ],
             "time": "2021-12-25T07:07:57+00:00"
-        },
-        {
-            "name": "psalm/phar",
-            "version": "4.16.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/psalm/phar.git",
-                "reference": "943b66f777f7ecaac6843088a27c64365a1e8922"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/psalm/phar/zipball/943b66f777f7ecaac6843088a27c64365a1e8922",
-                "reference": "943b66f777f7ecaac6843088a27c64365a1e8922",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.1 || ^8.0"
-            },
-            "conflict": {
-                "vimeo/psalm": "*"
-            },
-            "bin": [
-                "psalm.phar"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Composer-based Psalm Phar",
-            "support": {
-                "issues": "https://github.com/psalm/phar/issues",
-                "source": "https://github.com/psalm/phar/tree/4.16.1"
-            },
-            "time": "2021-12-26T08:31:45+00:00"
         },
         {
             "name": "psr/cache",

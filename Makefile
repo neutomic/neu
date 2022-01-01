@@ -3,6 +3,11 @@ help:                                                                           
 
 install:                                                              			## install all dependencies for a development environment
 	composer install
+	cd config/tools && composer install
+
+update:                                                              			## update all dependencies for a development environment
+	composer update
+	cd config/tools && composer update
 
 coding-standard-fix:                                                            ## apply automated coding standard fixes
 	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php
@@ -13,13 +18,13 @@ coding-standard-check:                                                          
 	./vendor/bin/phpcs --basepath=. --standard=config/.phpcs.xml
 
 static-analysis:                                                                ## run static analysis checks
-	./vendor/psalm/phar/psalm.phar -c config/psalm.xml --show-info=true --no-cache
+	cd config && ./tools/vendor/bin/psalm -c psalm.xml --show-info=true --no-cache
 
 type-coverage:                                                                  ## send static analysis type coverage metrics to https://shepherd.dev/
-	./vendor/psalm/phar/psalm.phar -c config/psalm.xml --shepherd --stats
+	cd config && ./tools/vendor/bin/psalm -c psalm.xml --shepherd --stats
 
 security-analysis:                                                              ## run static analysis security checks
-	./vendor/psalm/phar/psalm.phar -c config/psalm.xml --taint-analysis
+	cd config && ./tools/vendor/bin/psalm -c psalm.xml --taint-analysis
 
 unit-tests:                                                                     ## run unit test suite
 	php vendor/bin/phpunit -c config/phpunit.xml.dist

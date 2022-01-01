@@ -1,0 +1,7 @@
+{
+    "name": "neutomic/tools",
+    "require": {
+        "vimeo/psalm": "^4.16.1",
+        "php-standard-library/psalm-plugin": "^1.1.2"
+    }
+}
