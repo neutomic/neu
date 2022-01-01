@@ -2,8 +2,8 @@ help:                                                                           
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_\-\.]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 install:                                                              			## install all dependencies for a development environment
-	composer install
-	cd config/tools && composer install
+	composer install -n
+	cd config/tools && composer install -n
 
 update:                                                              			## update all dependencies for a development environment
 	composer update
