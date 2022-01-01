@@ -3,7 +3,6 @@
     <description>The coding standard for Neu Framework.</description>
 
     <file>../src</file>
-    <file>../config</file>
     <file>../tests</file>
 
     <arg name="basepath" value="."/>
