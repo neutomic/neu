@@ -24,10 +24,16 @@
         "azjezz/psl": "2.0.x-dev"
     },
     "require-dev": {
+        "amphp/cache": "v2.x-dev",
         "friendsofphp/php-cs-fixer": "^3.4.0",
         "php-coveralls/php-coveralls": "^2.5",
         "phpunit/phpunit": "^9.5.10",
-        "squizlabs/php_codesniffer": "^3.6.1"
+        "psr/cache": "^1.0 || ^2.0 || ^3.0",
+        "psr/simple-cache": "^1.0 || ^2.0 || ^3.0",
+        "squizlabs/php_codesniffer": "^3.6.2",
+        "symfony/cache-contracts": "^2.5 || ^3.0",
+        "symfony/cache": "^6.0",
+        "cache/array-adapter": "^1.1"
     },
     "autoload": {
         "psr-4": {
