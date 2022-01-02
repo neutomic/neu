@@ -7,7 +7,7 @@ install:                                                              			## inst
 
 update:                                                              			## update all dependencies for a development environment
 	composer update
-	cd config/tools && composer update
+	cd config/tools && composer update -n
 
 coding-standard-fix:                                                            ## apply automated coding standard fixes
 	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php

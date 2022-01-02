@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0bd15682b2acdbbaec84958e3eb5a7b5",
+    "content-hash": "7d99351b567a6a01ca4d324da92194f6",
     "packages": [
         {
             "name": "amphp/amp",
@@ -100,12 +100,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/azjezz/psl.git",
-                "reference": "5e1c2d9bbfa9e4c66ac588bace5ff5c71a0b37f3"
+                "reference": "3926cffa38eadb3ce62ce2acdf06ec274e727e82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azjezz/psl/zipball/5e1c2d9bbfa9e4c66ac588bace5ff5c71a0b37f3",
-                "reference": "5e1c2d9bbfa9e4c66ac588bace5ff5c71a0b37f3",
+                "url": "https://api.github.com/repos/azjezz/psl/zipball/3926cffa38eadb3ce62ce2acdf06ec274e727e82",
+                "reference": "3926cffa38eadb3ce62ce2acdf06ec274e727e82",
                 "shasum": ""
             },
             "require": {
@@ -167,7 +167,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2021-12-31T15:46:57+00:00"
+            "time": "2022-01-02T17:50:07+00:00"
         },
         {
             "name": "revolt/event-loop",
@@ -5078,12 +5078,12 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "amphp/amp": 20,
         "azjezz/psl": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "~8.1.0",
