@@ -28,7 +28,7 @@ interface DriverInterface
      * @param null|positive-int $ttl The TTL value of this item.
      *
      * @throws Exception\InvalidKeyException If the $key string is not a legal value.
-     * @throws Exception\InvalidKeyException If the $value cannot be stored using this driver.
+     * @throws Exception\InvalidValueException If the $value cannot be stored using this driver.
      */
     public function set(string $key, mixed $value, null|int $ttl = null): void;
 

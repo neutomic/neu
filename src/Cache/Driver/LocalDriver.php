@@ -40,6 +40,9 @@ final class LocalDriver implements DriverInterface
         EventLoop::disable($this->gcWatcher);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function get(string $key): mixed
     {
         if ('' === $key) {
@@ -61,6 +64,9 @@ final class LocalDriver implements DriverInterface
         throw Exception\UnavailableItemException::for($key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function set(string $key, mixed $value, ?int $ttl = null): void
     {
         if ($ttl !== null && 0 >= $ttl) {
@@ -81,6 +87,9 @@ final class LocalDriver implements DriverInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(string $key): void
     {
         if ('' === $key) {
