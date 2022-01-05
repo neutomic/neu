@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Neu\Http\Message;
 
 use InvalidArgumentException;
-use Psr\Http\Message\UriInterface;
 
 interface RequestInterface extends MessageInterface
 {
