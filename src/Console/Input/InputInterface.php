@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neu\Console\Input;
 
 use Psl\IO;
+use Neu\Console\Exception;
 
 /**
  * The `Input` class contains all available `Flag`, `Argument`, `Option`, and
@@ -64,6 +65,8 @@ interface InputInterface
 
     /**
      * Read in and return input from the user.
+     *
+     * @throws Exception\NonInteractiveInputException
      */
     public function getUserInput(?int $length = null): string;
 

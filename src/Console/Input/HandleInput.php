@@ -380,6 +380,10 @@ final class HandleInput implements InputInterface
      */
     public function getUserInput(?int $length = null): string
     {
+        if (!$this->isInteractive()) {
+            throw new Console\Exception\NonInteractiveInputException('The current terminal session is non interactive.');
+        }
+
         if ($length !== null) {
             return $this->reader->readFixedSize($length);
         }
