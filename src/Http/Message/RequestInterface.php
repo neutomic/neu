@@ -109,27 +109,47 @@ interface RequestInterface extends MessageInterface
      *
      * Retrieves cookies sent by the client to the server.
      *
-     * @return list<RequestCookieInterface>
+     * @return list<array{non-empty-string, non-empty-string}>
      */
     public function getCookies(): array;
 
     /**
-     * Returns an instance with the provided cookie.
+     * Return an instance with the specified cookies string pairs.
+     *
+     * Setting query parameters MUST NOT change the URI stored by the
+     * request.
      *
      * This method MUST be implemented in such a way as to retain the
      * immutability of the message, and MUST return an instance that has the
-     * new cookie instance.
+     * update cookies.
+     *
+     * @param list<array{non-empty-string, non-empty-string}> $cookies A list of cookie name, value paris.
      */
-    public function withCookie(RequestCookieInterface $cookie): static;
+    public function withCookies(array $cookies): static;
+
 
     /**
-     * Returns an instance with the provided cookie removed.
+     * Return an instance with the specified cookie name/value.
      *
      * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance with the
-     * provided cookie instance removed.
+     * immutability of the message, and MUST return an instance that has the
+     * updated query parameters.
+     *
+     * @param non-empty-string $name
+     * @param non-empty-string $value
      */
-    public function withoutCookie(RequestCookieInterface $cookie): static;
+    public function withCookie(string $name, string $value): static;
+
+    /**
+     * Return an instance without the specified cookie.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that removes
+     * the named header.
+     *
+     * @param non-empty-string $name
+     */
+    public function withoutCookie(string $name): static;
 
     /**
      * Retrieve query parameters.
@@ -165,10 +185,6 @@ interface RequestInterface extends MessageInterface
     /**
      * Return an instance with the specified query name/value.
      *
-     * Existing values for the specified query will be maintained. The new
-     * value will be appended to the existing list. If the query parameter did not
-     * exist previously, it will be added.
-     *
      * Adding a new query string parameter MUST NOT change the URI stored by the
      * request.
      *
@@ -179,7 +195,18 @@ interface RequestInterface extends MessageInterface
      * @param non-empty-string $name
      * @param non-empty-string $value
      */
-    public function withAddedQueryParameter(string $name, string $value): static;
+    public function withQueryParameter(string $name, string $value): static;
+
+    /**
+     * Return an instance without the specified query parameter.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that removes
+     * the named header.
+     *
+     * @param non-empty-string $name
+     */
+    public function withoutQueryParameter(string $name): static;
 
     /**
      * Retrieve attributes derived from the request.
