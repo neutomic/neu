@@ -49,4 +49,49 @@ interface ResponseInterface extends MessageInterface
      * @return string Reason phrase; must return an empty string if none present.
      */
     public function getReasonPhrase(): string;
+
+    /**
+     * Retrieve all cookies associated with the response.
+     *
+     * @return array<string, CookieInterface>
+     */
+    public function getCookies(): array;
+
+    /**
+     * Retrieves a response cookie by the given case-sensitive name.
+     *
+     * This method returns a cookie instance of the given
+     * case-sensitive cookie name.
+     *
+     * If the cookie does not appear in the response, this method MUST return null.
+     *
+     * @param non-empty-string $name
+     */
+    public function getCookie(string $name): ?CookieInterface;
+
+    /**
+     * Return an instance with the provided Cookie.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * changed response cookies.
+     *
+     * @param non-empty-string $name
+     *
+     * @link https://tools.ietf.org/html/rfc6265#section-4.1
+     */
+    public function withCookie(string $name, CookieInterface $cookie): static;
+
+    /**
+     * Return an instance without the specified cookie.
+     *
+     * Cookie name resolution MUST be done with case-sensitivity.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that removes
+     * the named cookie.
+     *
+     * @param non-empty-string $name
+     */
+    public function withoutCookie(string $name): static;
 }
