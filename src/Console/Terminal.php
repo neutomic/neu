@@ -5,61 +5,19 @@ declare(strict_types=1);
 namespace Neu\Console;
 
 use Psl\Env;
-use Psl\IO;
 use Psl\Regex;
 use Psl\Shell;
 use Psl\Str;
 
-final class Terminal implements TerminalInterface
+final class Terminal
 {
-    private IO\ReadStreamHandleInterface $inputHandle;
-    private IO\WriteStreamHandleInterface $outputHandle;
-    private ?IO\WriteStreamHandleInterface $errorHandle;
-    private ?int $height;
-    private ?int $width;
-
-    public function __construct(
-        ?IO\ReadStreamHandleInterface  $inputHandle = null,
-        ?IO\WriteStreamHandleInterface $outputHandle = null,
-        ?IO\WriteStreamHandleInterface $errorHandle = null,
-        ?int                           $height = null,
-        ?int                           $width = null,
-    ) {
-        $this->inputHandle = $inputHandle ?? IO\input_handle();
-        $this->outputHandle = $outputHandle ?? IO\output_handle();
-        $this->errorHandle = $errorHandle ?? IO\error_handle();
-        $this->height = $height;
-        $this->width = $width;
-    }
+    private static ?int $height = null;
+    private static ?int $width = null;
 
     /**
-     * {@inheritDoc}
+     * Get the terminal width.
      */
-    public function getInputHandle(): IO\ReadStreamHandleInterface
-    {
-        return $this->inputHandle;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOutputHandle(): IO\WriteStreamHandleInterface
-    {
-        return $this->outputHandle;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getErrorHandle(): ?IO\WriteStreamHandleInterface
-    {
-        return $this->errorHandle;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getHeight(): int
+    public static function getHeight(): int
     {
         $lines = Env\get_var('LINES');
         if ($lines !== null) {
@@ -69,15 +27,15 @@ final class Terminal implements TerminalInterface
             }
         }
 
-        if ($this->height !== null) {
-            return $this->height;
+        if (self::$height !== null) {
+            return self::$height;
         }
 
-        $dimensions = $this->getDimensionsUsingStty();
-        $this->height = $dimensions['height'] ?? self::DEFAULT_HEIGHT;
-        $this->width ??= $dimensions['width'] ?? self::DEFAULT_WIDTH;
+        $dimensions = self::getDimensionsUsingStty();
+        self::$height = $dimensions['height'] ?? self::DEFAULT_HEIGHT;
+        self::$width ??= $dimensions['width'] ?? self::DEFAULT_WIDTH;
 
-        return $this->height;
+        return self::$height;
     }
 
     /**
@@ -85,7 +43,7 @@ final class Terminal implements TerminalInterface
      *
      * @return array{width: ?int, height: ?int}
      */
-    private function getDimensionsUsingStty(): array
+    private static function getDimensionsUsingStty(): array
     {
         try {
             $sttyString = Shell\execute('stty', ['-a', '|', 'grep', 'columns'], escape_arguments: false);
@@ -113,9 +71,9 @@ final class Terminal implements TerminalInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Get the terminal width.
      */
-    public function getWidth(): int
+    public static function getWidth(): int
     {
         $cols = Env\get_var('COLUMNS');
         if ($cols !== null) {
@@ -125,14 +83,14 @@ final class Terminal implements TerminalInterface
             }
         }
 
-        if ($this->width !== null) {
-            return $this->width;
+        if (self::$width !== null) {
+            return self::$width;
         }
 
-        $dimensions = $this->getDimensionsUsingStty();
-        $this->width = $dimensions['width'] ?? self::DEFAULT_WIDTH;
-        $this->height ??= $dimensions['height'] ?? self::DEFAULT_HEIGHT;
+        $dimensions = self::getDimensionsUsingStty();
+        self::$width = $dimensions['width'] ?? self::DEFAULT_WIDTH;
+        self::$height ??= $dimensions['height'] ?? self::DEFAULT_HEIGHT;
 
-        return $this->width;
+        return self::$width;
     }
 }

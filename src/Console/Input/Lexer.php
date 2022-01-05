@@ -8,7 +8,7 @@ use Iterator;
 use Psl\Dict;
 use Psl\Iter;
 use Psl\Regex;
-use Psl\Str;
+use Psl\Str\Byte;
 use Psl\Vec;
 
 /**
@@ -70,7 +70,7 @@ final class Lexer implements Iterator
      */
     public static function isLong(string $value): bool
     {
-        return Str\starts_with($value, '--');
+        return Byte\starts_with($value, '--');
     }
 
     /**
@@ -78,7 +78,7 @@ final class Lexer implements Iterator
      */
     public static function isShort(string $value): bool
     {
-        return !self::isLong($value) && Str\starts_with($value, '-');
+        return !self::isLong($value) && Byte\starts_with($value, '-');
     }
 
     /**
@@ -162,9 +162,9 @@ final class Lexer implements Iterator
         $value = $input;
 
         if (self::isLong($input)) {
-            $value = Str\slice($input, 2);
+            $value = Byte\slice($input, 2);
         } elseif (self::isShort($input)) {
-            $value = Str\slice($input, 1);
+            $value = Byte\slice($input, 1);
         }
 
         return ['raw' => $raw, 'value' => $value];
@@ -177,13 +177,11 @@ final class Lexer implements Iterator
      */
     private function explode(): void
     {
-        if (            !self::isShort($this->current['raw']) ||
-            Str\length($this->current['value']) <= 1
-        ) {
+        if (!self::isShort($this->current['raw']) || Byte\length($this->current['value']) <= 1) {
             return;
         }
 
-        $exploded = Str\chunk($this->current['value']);
+        $exploded = Byte\chunk($this->current['value']);
 
         $this->current = [
             'value' => (string) Iter\last($exploded),

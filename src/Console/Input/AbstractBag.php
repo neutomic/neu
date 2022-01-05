@@ -14,6 +14,20 @@ use Neu\Console\Bag;
 class AbstractBag extends Bag\AbstractBag
 {
     /**
+     * @param list<T> $data
+     */
+    public function __construct(array $data = [])
+    {
+        $raw = [];
+        foreach ($data as $definition) {
+            $raw[$definition->getName()] = $definition;
+            $raw[$definition->getAlias()] = $definition;
+        }
+
+        parent::__construct($raw);
+    }
+
+    /**
      * Retrieve the definition object based on the given key.
      *
      * The key is checked against all available names as well as aliases.

@@ -8,11 +8,11 @@ update:                                                              			## updat
 	composer update
 
 coding-standard-fix:                                                            ## apply automated coding standard fixes
-	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php
+	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php -vvv
 	./vendor/bin/phpcbf --basepath=. --standard=config/.phpcs.xml
 
 coding-standard-check:                                                          ## check coding-standard compliance
-	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php --dry-run
+	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php --dry-run -vvv
 	./vendor/bin/phpcs --basepath=. --standard=config/.phpcs.xml
 
 unit-tests:                                                                     ## run unit test suite

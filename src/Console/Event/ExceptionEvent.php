@@ -14,29 +14,15 @@ use Neu\Console\Output;
  */
 final class ExceptionEvent extends Event
 {
-    private ?int $exitCode;
+    public ?int $exitCode = null;
 
     public function __construct(
-        Input\InputInterface   $input,
-        Output\OutputInterface $output,
-        private Exception      $exception,
-        ?Command\Command       $command,
+        public readonly Input\InputInterface   $input,
+        public readonly Output\OutputInterface $output,
+        public readonly Exception $exception,
+        public readonly ?Command\ConfigurationInterface $configuration,
+        public readonly ?Command\CommandInterface $command,
     ) {
-        parent::__construct($input, $output, $command);
-    }
-
-    public function getException(): Exception
-    {
-        return $this->exception;
-    }
-
-    public function getExitCode(): ?int
-    {
-        return $this->exitCode;
-    }
-
-    public function setExitCode(int $exitCode): void
-    {
-        $this->exitCode = $exitCode;
+        parent::__construct($this->input, $this->output, $this->configuration, $this->command);
     }
 }

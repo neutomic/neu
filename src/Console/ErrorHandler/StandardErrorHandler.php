@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Neu\Console\ErrorHandler;
 
 use Exception as RootException;
+use Neu\Console\Block\Block;
 use Neu\Console\Command;
+use Neu\Console\CommandProvider;
 use Neu\Console\Input;
 use Neu\Console\Output;
-use Neu\Console\Style;
-use Neu\Console\Terminal;
 use Psl\Iter;
 use Psl\Str;
 use Psl\Vec;
@@ -18,23 +18,18 @@ use function is_string;
 
 final class StandardErrorHandler implements ErrorHandlerInterface
 {
-    public function __construct(private readonly Terminal $terminal)
-    {
-    }
-
     /**
      * Handle the given error and return the proper exit code.
      */
-    public function handle(Input\InputInterface $input, Output\OutputInterface $output, RootException $exception, ?Command\Command $command = null): int
+    public function handle(Input\InputInterface $input, Output\OutputInterface $output, RootException $exception, ?CommandProvider\Reference $command = null): int
     {
         if ($output instanceof Output\ConsoleOutputInterface) {
             $output = $output->getErrorOutput();
         }
 
-        $io = new Style\Style($this->terminal, $input, $output);
-        $this->renderMessage($io, $exception);
-        $this->renderSource($io, $exception);
-        $this->renderTrace($io, $exception);
+        $this->renderMessage($output, $exception);
+        $this->renderSource($output, $exception);
+        $this->renderTrace($output, $exception);
 
         $code = $exception->getCode();
         if (is_string($code)) {
@@ -48,14 +43,15 @@ final class StandardErrorHandler implements ErrorHandlerInterface
         return $code;
     }
 
-    private function renderMessage(Style\StyleInterface $io, RootException $exception,): void
+    private function renderMessage(Output\OutputInterface $output, RootException $exception): void
     {
-        $io->block($exception->getMessage(), Output\Verbosity::Normal, $exception::class, 'fg=white; bg=red;', ' | ', true, true, false);
+        $block = new Block($output, $exception::class, 'fg=white; bg=red;', ' | ', true, true, false);
+        $block->display($exception->getMessage());
     }
 
-    private function renderSource(Style\StyleInterface $io, RootException $exception,): void
+    private function renderSource(Output\OutputInterface $output, RootException $exception): void
     {
-        $io->writeLine(
+        $output->writeLine(
             Str\format(
                 '- %s:%d%s',
                 $exception->getFile(),
@@ -66,7 +62,7 @@ final class StandardErrorHandler implements ErrorHandlerInterface
         );
     }
 
-    private function renderTrace(Style\StyleInterface $io, RootException $exception,): void
+    private function renderTrace(Output\OutputInterface $output, RootException $exception): void
     {
         $frames = Vec\filter(
             Vec\map(
@@ -80,7 +76,7 @@ final class StandardErrorHandler implements ErrorHandlerInterface
         );
 
         if (0 !== Iter\count($frames)) {
-            $io->writeLine(
+            $output->writeLine(
                 '<fg=yellow>Exception trace: </>' . Output\OutputInterface::END_OF_LINE,
                 Output\Verbosity::VeryVerbose,
             );
@@ -92,12 +88,12 @@ final class StandardErrorHandler implements ErrorHandlerInterface
                     $call = Str\format(' %s()', $frame['function']);
                 }
 
-                $io->writeLine($call, Output\Verbosity::VeryVerbose);
-                $io->write(Str\format(
+                $output->writeLine($call, Output\Verbosity::VeryVerbose);
+                $output->writeLine(Str\format(
                     ' ↪ <fg=green>%s</>',
                     $frame['file'] . (Iter\contains_key($frame, 'line') ? (':' . $frame['line']) : ''),
                 ), Output\Verbosity::VeryVerbose);
-                $io->nl(2, Output\Verbosity::VeryVerbose);
+                $output->writeLine('', Output\Verbosity::VeryVerbose);
             }
         }
     }

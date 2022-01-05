@@ -7,7 +7,7 @@ namespace Neu\Console\Output;
 use Neu\Console\Formatter;
 use Psl\IO;
 
-final class StreamHandleConsoleOutput implements ConsoleOutputInterface
+final class HandleConsoleOutput implements ConsoleOutputInterface
 {
     /**
      * Standard output.
@@ -22,11 +22,11 @@ final class StreamHandleConsoleOutput implements ConsoleOutputInterface
     /**
      * Construct a new `Output` object.
      */
-    public function __construct(IO\WriteStreamHandleInterface $output, IO\WriteStreamHandleInterface $error, Verbosity $verbosity = Verbosity::Normal, ?bool $decorated = null, ?Formatter\FormatterInterface $formatter = null)
+    public function __construct(IO\WriteHandleInterface $output, IO\WriteHandleInterface $error, Verbosity $verbosity = Verbosity::Normal, ?bool $decorated = null, ?Formatter\FormatterInterface $formatter = null)
     {
-        $this->output = new StreamHandleOutput($output, $verbosity, $decorated, $formatter);
+        $this->output = new HandleOutput($output, $verbosity, $decorated, $formatter);
         $is_decorated = $this->isDecorated();
-        $this->error = new StreamHandleOutput($error, $verbosity, $decorated, $formatter);
+        $this->error = new HandleOutput($error, $verbosity, $decorated, $formatter);
 
         if (null === $decorated) {
             $this->setDecorated($is_decorated && $this->error->isDecorated());

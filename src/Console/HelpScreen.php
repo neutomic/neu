@@ -27,14 +27,14 @@ final class HelpScreen
     protected Bag\ArgumentBag $arguments;
 
     /**
-     * The current `Command` the `HelpScreen` refers to.
+     * The current command configuration the `HelpScreen` refers to.
      */
-    protected ?Command\Command $command = null;
+    protected ?Command\ConfigurationInterface $configuration = null;
 
     /**
-     * The available `Command` objects available.
+     * The available commands configuration objects available.
      *
-     * @var array<string, Command\Command>
+     * @var array<string, Command\ConfigurationInterface>
      */
     protected array $commands;
 
@@ -57,9 +57,9 @@ final class HelpScreen
     /**
      * Construct a new instance of the `HelpScreen`.
      */
-    public function __construct(private readonly Application $application, private readonly Terminal $terminal, Input\InputInterface $input)
+    public function __construct(private readonly Application $application, Input\InputInterface $input)
     {
-        $this->commands = $application->all();
+        $this->commands = $application->getProvider()->getAllConfigurations();
         $this->arguments = $input->getArguments();
         $this->flags = $input->getFlags();
         $this->options = $input->getOptions();
@@ -108,7 +108,7 @@ final class HelpScreen
             }
         }
 
-        if (($this->command === null) && !Iter\is_empty($this->commands)) {
+        if (($this->configuration === null) && !Iter\is_empty($this->commands)) {
             $retval[] = $this->renderCommands();
         }
 
@@ -122,19 +122,19 @@ final class HelpScreen
      */
     protected function renderHeading(): string
     {
-        $retval = [];
-        if ($this->command !== null) {
-            $command = $this->command;
+        $lines = [];
+        if ($this->configuration !== null) {
+            $command = $this->configuration;
             $description = $command->getDescription();
             if ($description !== '') {
-                $retval[] = $command->getName() . ' - ' . $description;
+                $lines[] = $command->getName() . ' - ' . $description;
             } else {
-                $retval[] = $command->getName();
+                $lines[] = $command->getName();
             }
         } elseif ($this->application->getName() !== '') {
             $banner = $this->application->getBanner();
             if ($banner !== '') {
-                $retval[] = $banner;
+                $lines[] = $banner;
             }
 
             $name = Str\format('<fg=green>%s</>', $this->application->getName());
@@ -143,10 +143,10 @@ final class HelpScreen
                 $name .= Str\format(' version <fg=yellow>%s</>', $version);
             }
 
-            $retval[] = $name;
+            $lines[] = $name;
         }
 
-        return Str\join($retval, Output\OutputInterface::END_OF_LINE);
+        return Str\join($lines, Output\OutputInterface::END_OF_LINE);
     }
 
     /**
@@ -155,12 +155,12 @@ final class HelpScreen
     protected function renderUsage(): string
     {
         $usage = [];
-        if ($this->command !== null) {
-            $command = $this->command;
+        if ($this->configuration !== null) {
+            $configuration = $this->configuration;
 
-            $usage[] = $command->getName();
+            $usage[] = $configuration->getName();
 
-            foreach ($command->getFlags() as $flag) {
+            foreach ($configuration->getFlags() as $flag) {
                 $flg = $flag->getFormattedName($flag->getName());
                 $alias = $flag->getAlias();
                 if (!Str\is_empty($alias)) {
@@ -174,7 +174,7 @@ final class HelpScreen
                 }
             }
 
-            foreach ($command->getOptions() as $option) {
+            foreach ($configuration->getOptions() as $option) {
                 $opt = $option->getFormattedName($option->getName());
                 $alias = $option->getAlias();
                 if (!Str\is_empty($alias)) {
@@ -189,7 +189,7 @@ final class HelpScreen
                 }
             }
 
-            foreach ($command->getArguments() as $argument) {
+            foreach ($configuration->getArguments() as $argument) {
                 $arg = $argument->getName();
                 $alias = $argument->getAlias();
                 if (!Str\is_empty($alias)) {
@@ -244,7 +244,7 @@ final class HelpScreen
             static fn(string $key): int => Str\length($key),
         ));
 
-        $descriptionLength = $this->terminal->getWidth() - 6 - $maxLength;
+        $descriptionLength = Terminal::getWidth() - 6 - $maxLength;
         $output = [];
         foreach ($entries as $name => $description) {
             $formatted = '  ' . Str\pad_right($name, $maxLength);
@@ -292,7 +292,7 @@ final class HelpScreen
                 },
             ),
         ) ?? 0;
-        $descriptionLength = $this->terminal->getWidth() - 4 - $maxLength;
+        $descriptionLength = Terminal::getWidth() - 4 - $maxLength;
 
         $output = [];
         $nestedNames = [];
@@ -385,11 +385,11 @@ final class HelpScreen
     }
 
     /**
-     * Set the `Command` to render a the help screen for.
+     * Set the command configuration to render a help screen for.
      */
-    public function setCommand(Command\Command $command): self
+    public function setCommandConfiguration(Command\Configuration $configuration): self
     {
-        $this->command = $command;
+        $this->configuration = $configuration;
 
         return $this;
     }

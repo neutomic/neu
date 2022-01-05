@@ -1,23 +1,27 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neu\Console\Output;
 
 use Neu\Console\Formatter;
 use Psl\Env;
 use Psl\IO;
+
 use function function_exists;
 use function sapi_windows_vt100_support;
 use function stream_isatty;
+
 use const DIRECTORY_SEPARATOR;
 
-final class StreamHandleOutput extends AbstractOutput
+final class HandleOutput extends AbstractOutput
 {
-    private IO\WriteStreamHandleInterface $handle;
+    private readonly IO\WriteHandleInterface $handle;
 
     /**
      * Construct a new `Output` object.
      */
-    public function __construct(IO\WriteStreamHandleInterface $handle, Verbosity $verbosity = Verbosity::Normal, ?bool $decorated = null, ?Formatter\FormatterInterface $formatter = null)
+    public function __construct(IO\WriteHandleInterface $handle, Verbosity $verbosity = Verbosity::Normal, ?bool $decorated = null, ?Formatter\FormatterInterface $formatter = null)
     {
         $this->handle = $handle;
         if (null === $decorated) {
@@ -46,21 +50,11 @@ final class StreamHandleOutput extends AbstractOutput
 
         $colors = Env\get_var('CLICOLORS');
         if ($colors !== null) {
-            if (
-                $colors === '1' ||
-                $colors === 'yes' ||
-                $colors === 'true' ||
-                $colors === 'on'
-            ) {
+            if ($colors === '1' || $colors === 'yes' || $colors === 'true' || $colors === 'on') {
                 return true;
             }
 
-            if (
-                $colors === '0' ||
-                $colors === 'no' ||
-                $colors === 'false' ||
-                $colors === 'off'
-            ) {
+            if ($colors === '0' || $colors === 'no' || $colors === 'false' || $colors === 'off') {
                 return false;
             }
         }
@@ -90,13 +84,19 @@ final class StreamHandleOutput extends AbstractOutput
             return true;
         }
 
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return (function_exists('sapi_windows_vt100_support') && @sapi_windows_vt100_support($this->handle->getStream()))
-                || false !== getenv('ANSICON')
-                || 'ON' === getenv('ConEmuANSI')
-                || 'xterm' === getenv('TERM');
+        // Generic
+        if ($this->handle instanceof IO\StreamHandleInterface) {
+            if (DIRECTORY_SEPARATOR === '\\') {
+                return (function_exists('sapi_windows_vt100_support') && @sapi_windows_vt100_support($this->handle->getStream()))
+                    || false !== getenv('ANSICON')
+                    || 'ON' === getenv('ConEmuANSI')
+                    || 'xterm' === getenv('TERM');
+            }
+
+            return stream_isatty($this->handle->getStream());
         }
 
-        return stream_isatty($this->handle->getStream());
+        // Default
+        return false;
     }
 }

@@ -8,8 +8,7 @@ use Exception as RootException;
 use Neu\EventDispatcher;
 use Psl\Dict;
 use Psl\Env;
-use Psl\Iter;
-use Psl\Regex;
+use Psl\IO;
 use Psl\Str;
 use Psl\Vec;
 
@@ -25,23 +24,9 @@ class Application
     protected string $banner = '';
 
     /**
-     * The `Terminal` instance.
+     * The `CommandProvider` instance to use to lookup commands.
      */
-    protected TerminalInterface $terminal;
-
-    /**
-     * Store added commands until we inject them into the `Input` at runtime.
-     *
-     * @var array<string, Command\Command>
-     */
-    protected array $commands = [];
-
-    /**
-     * The `Loader` instances to use to lookup commands.
-     *
-     * @var list<Command\Loader\LoaderInterface>
-     */
-    protected array $loaders = [];
+    protected CommandProvider\CommandProviderAggregate $provider;
 
     /**
      * Error Handler used to handle exceptions thrown during command execution.
@@ -65,8 +50,8 @@ class Application
          */
         protected string            $version = '',
     ) {
-        $this->terminal = new Terminal();
-        $this->errorHandler = new ErrorHandler\StandardErrorHandler($this->terminal);
+        $this->provider = new CommandProvider\CommandProviderAggregate();
+        $this->errorHandler = new ErrorHandler\StandardErrorHandler();
     }
 
     /**
@@ -107,104 +92,18 @@ class Application
     }
 
     /**
-     * Add a `CommandLoader` to use for command discovery.
+     * Add a `CommandProvider` to use for command discovery.
      */
-    public function addLoader(Command\Loader\LoaderInterface $loader): self
+    public function addProvider(CommandProvider\CommandProviderInterface $provider): self
     {
-        foreach ($loader->getNames() as $name) {
-            if (!Regex\matches($name, "/^[^\:]++(\:[^\:]++)*$/")) {
-                throw new Exception\InvalidCharacterSequenceException(
-                    Str\format('Command name "%s" is invalid.', $name),
-                );
-            }
-        }
-
-        $this->loaders[] = $loader;
+        $this->provider->attach($provider);
 
         return $this;
     }
 
-    /**
-     * Add a `Command` to the application to be parsed by the `Input`.
-     */
-    public function add(Command\Command $command): self
+    public function getProvider(): CommandProvider\CommandProviderInterface
     {
-        if (!$command->isEnabled()) {
-            return $this;
-        }
-
-        $name = $command->getName();
-        $aliases = $command->getAliases();
-        foreach ([$name, ...$aliases] as $command_name) {
-            if (!Regex\matches($command_name, "/^[^\:]++(\:[^\:]++)*$/")) {
-                throw new Exception\InvalidCharacterSequenceException(
-                    Str\format('Command name "%s" is invalid.', $command_name),
-                );
-            }
-        }
-
-        $this->commands[$name] = $command;
-
-        return $this;
-    }
-
-    /**
-     * Gets the commands.
-     *
-     * The container keys are the full names and the values the command instances.
-     *
-     * @return array<string, Command\Command>
-     */
-    public function all(): array
-    {
-        $commands = $this->commands;
-        foreach ($this->loaders as $loader) {
-            foreach ($loader->getNames() as $name) {
-                if (!Iter\contains_key($commands, $name) && $this->has($name)) {
-                    $commands[$name] = $this->get($name);
-                }
-            }
-        }
-
-        return $commands;
-    }
-
-    /**
-     * Returns true if the command exists, false otherwise.
-     */
-    public function has(string $name): bool
-    {
-        if (Iter\contains_key($this->commands, $name)) {
-            return true;
-        }
-
-        foreach ($this->loaders as $loader) {
-            if ($loader->has($name)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns a registered command by name or alias.
-     */
-    public function get(string $name): Command\Command
-    {
-        if (Iter\contains_key($this->commands, $name)) {
-            return $this->commands[$name];
-        }
-
-        foreach ($this->loaders as $loader) {
-            if ($loader->has($name)) {
-                return $loader->get($name);
-            }
-        }
-
-        throw new Exception\CommandNotFoundException(
-            Str\format('The command "%s" does not exist.', $name),
-        );
+        return $this->provider;
     }
 
     /**
@@ -250,17 +149,17 @@ class Application
      */
     public function run(?Input\InputInterface $input = null, ?Output\OutputInterface $output = null): int
     {
-        Env\set_var('COLUMNS', (string)$this->terminal->getWidth());
-        Env\set_var('LINES', (string)$this->terminal->getHeight());
+        Env\set_var('COLUMNS', (string) Terminal::getWidth());
+        Env\set_var('LINES', (string) Terminal::getHeight());
         if ($input === null) {
-            $input = new Input\StreamHandleInput($this->terminal->getInputHandle(), Vec\values(Dict\drop(Env\args(), 1)));
+            $input = new Input\HandleInput(IO\input_handle(), Vec\values(Dict\drop(Env\args(), 1)));
         }
 
         if ($output === null) {
-            $output = new Output\StreamHandleConsoleOutput($this->terminal->getOutputHandle(), $this->terminal->getErrorHandle());
+            $output = new Output\HandleConsoleOutput(IO\output_handle(), IO\error_handle());
         }
 
-        $command = null;
+        $reference = null;
         try {
             $this->bootstrap($input, $output);
 
@@ -307,23 +206,23 @@ class Application
 
                 $exitCode = Command\ExitCode::Success;
             } else {
-                $command = $this->find($command_name);
-                $exitCode = $this->runCommand($input, $output, $command);
+                $reference = $this->provider->get($command_name);
+                $exitCode = $this->runCommand($input, $output, $reference);
             }
         } catch (RootException $exception) {
             $exitCode = null;
             if ($this->dispatcher !== null) {
                 $dispatcher = $this->dispatcher;
-                $event = $dispatcher->dispatch(new Event\ExceptionEvent($input, $output, $exception, $command));
+                $event = $dispatcher->dispatch(new Event\ExceptionEvent($input, $output, $exception, $reference->configuration, $reference->command));
                 $exitCode = $event->getExitCode();
             }
 
             if ($exitCode === null || Command\ExitCode::Success !== $exitCode) {
-                $exitCode = $this->errorHandler->handle($input, $output, $exception, $command);
+                $exitCode = $this->errorHandler->handle($input, $output, $exception, $reference);
             }
         }
 
-        return $this->terminate($input, $output, $command, $exitCode instanceof Command\ExitCode ? $exitCode->value : $exitCode);
+        return $this->terminate($input, $output, $reference, $exitCode instanceof Command\ExitCode ? $exitCode->value : $exitCode);
     }
 
     /**
@@ -397,11 +296,11 @@ class Application
     /**
      * Render the help screen for the application or the `Command` passed in.
      */
-    protected function renderHelpScreen(Input\InputInterface $input, Output\OutputInterface $output, ?Command\Command $command = null): void
+    protected function renderHelpScreen(Input\InputInterface $input, Output\OutputInterface $output, ?CommandProvider\Reference $command = null): void
     {
-        $helpScreen = new HelpScreen($this, $this->terminal, $input);
+        $helpScreen = new HelpScreen($this, $input);
         if ($command !== null) {
-            $helpScreen->setCommand($command);
+            $helpScreen->setCommandConfiguration($command->configuration);
         }
 
         $output->write(
@@ -409,130 +308,42 @@ class Application
         );
     }
 
-    /**
-     * Finds a command by name or alias.
-     *
-     * Contrary to get, this command tries to find the best
-     * match if you give it an abbreviation of a name or alias.
-     */
-    public function find(string $name): Command\Command
-    {
-        foreach ($this->commands as $command) {
-            foreach ($command->getAliases() as $alias) {
-                if (!$this->has($alias)) {
-                    $this->commands[$alias] = $command;
-                }
-            }
-        }
-
-        if ($this->has($name)) {
-            return $this->get($name);
-        }
-
-        $allCommands = Vec\keys($this->commands);
-        foreach ($this->loaders as $loader) {
-            $allCommands = Vec\concat($allCommands, $loader->getNames());
-        }
-
-        $message = Str\format('Command "%s" is not defined.', $name);
-        $alternatives = $this->findAlternatives($name, $allCommands);
-        if (!Iter\is_empty($alternatives)) {
-            // remove hidden commands
-            $alternatives = Vec\filter(
-                $alternatives,
-                fn(string $name): bool => !$this->get($name)->isHidden(),
-            );
-            if (1 === Iter\count($alternatives)) {
-                $message .= Str\format(
-                    '%s%sDid you mean this?%s%s',
-                    Output\OutputInterface::END_OF_LINE,
-                    Output\OutputInterface::END_OF_LINE,
-                    Output\OutputInterface::END_OF_LINE,
-                    Output\OutputInterface::END_OF_LINE,
-                );
-            } else {
-                $message .= Str\format(
-                    '%s%sDid you mean one of these?%s%s',
-                    Output\OutputInterface::END_OF_LINE,
-                    Output\OutputInterface::END_OF_LINE,
-                    Output\OutputInterface::END_OF_LINE,
-                    Output\OutputInterface::END_OF_LINE,
-                );
-            }
-
-            foreach ($alternatives as $alternative) {
-                $message .= Str\format(
-                    '    - %s%s',
-                    $alternative,
-                    Output\OutputInterface::END_OF_LINE,
-                );
-            }
-        }
-
-        throw new Exception\CommandNotFoundException($message);
-    }
-
-    /**
-     * Finds alternative of $name among $collection.
-     *
-     * @param list<string> $collection
-     *
-     * @return list<string>
-     */
-    private function findAlternatives(string $name, array $collection): array
-    {
-        $threshold = 1e3;
-        $alternatives = [];
-        $collectionParts = [];
-        foreach ($collection as $item) {
-            $collectionParts[$item] = Str\split($item, ':');
-        }
-
-        foreach (Str\split($name, ':') as $i => $subname) {
-            foreach ($collectionParts as $collectionName => $parts) {
-                $exists = Iter\contains_key($alternatives, $collectionName);
-                if (!Iter\contains_key($parts, $i)) {
-                    if ($exists) {
-                        $alternatives[$collectionName] += $threshold;
-                    }
-
-                    continue;
-                }
-
-                $lev = (float)Str\levenshtein($subname, $parts[$i]);
-                if ($lev <= Str\length($subname) / 3 || ('' !== $subname && Str\contains($parts[$i], $subname))) {
-                    $alternatives[$collectionName] = $exists ? $alternatives[$collectionName] + $lev : $lev;
-                } elseif ($exists) {
-                    $alternatives[$collectionName] += $threshold;
-                }
-            }
-        }
-
-        foreach ($collection as $item) {
-            $lev = (float)Str\levenshtein($name, $item);
-            if ($lev <= Str\length($name) / 3 || Str\contains($item, $name)) {
-                $alternatives[$item] = Iter\contains_key($alternatives, $item) ? $alternatives[$item] - $lev : $lev;
-            }
-        }
-
-        return Vec\keys(Dict\sort(Dict\filter($alternatives, static fn($lev) => $lev < (2 * $threshold))));
-    }
 
     /**
      * Register and run the `Command` object.
      */
-    public function runCommand(Input\InputInterface $input, Output\OutputInterface $output, Command\Command $command): int
-    {
-        $command->setApplication($this);
-        $command->setTerminal($this->terminal);
-        $command->setInput($input);
-        $command->setOutput($output);
+    public function runCommand(
+        Input\InputInterface $input,
+        Output\OutputInterface $output,
+        CommandProvider\Reference $reference,
+    ): int {
+        $command = $reference->command;
+        $configuration = $reference->configuration;
+        if ($command instanceof Command\ApplicationAwareCommandInterface) {
+            $command->setApplication($this);
+        }
 
-        $command->registerInput();
+        $arguments = (new Input\Bag\ArgumentBag())->add($configuration->getArguments()->all());
+        foreach ($input->getArguments()->getIterator() as $name => $argument) {
+            $arguments->set($name, $argument);
+        }
+        $input->setArguments($arguments);
+
+        $flags = (new Input\Bag\FlagBag())->add($configuration->getFlags()->all());
+        foreach ($input->getFlags()->getIterator() as $name => $flag) {
+            $flags->set($name, $flag);
+        }
+        $input->setFlags($flags);
+
+        $options = (new Input\Bag\OptionBag())->add($configuration->getOptions()->all());
+        foreach ($input->getOptions()->getIterator() as $name => $option) {
+            $options->set($name, $option);
+        }
+        $input->setOptions($options);
 
         $input->parse(true);
         if ($input->getFlag('help')->getValue() === 1) {
-            $this->renderHelpScreen($input, $output, $command);
+            $this->renderHelpScreen($input, $output, $reference);
             return 0;
         }
 
@@ -545,16 +356,16 @@ class Application
 
         $dispatcher = $this->dispatcher;
         if ($dispatcher === null) {
-            return $command->run();
+            return $command->run($input, $output);
         }
 
         // Dispatch the `BeforeExecuteEvent` event to all registered listeners.
         $event = $dispatcher->dispatch(
-            new Event\BeforeExecuteEvent($input, $output, $command),
+            new Event\BeforeExecuteEvent($input, $output, $reference->configuration, $reference->command),
         );
 
         if ($event->commandShouldRun()) {
-            $exitCode = $command->run();
+            $exitCode = $command->run($input, $output);
         } else {
             $exitCode = Command\ExitCode::SkippedCommand->value;
         }
@@ -565,13 +376,17 @@ class Application
     /**
      * Termination method executed at the end of the application's run.
      */
-    protected function terminate(Input\InputInterface $input, Output\OutputInterface $output, ?Command\Command $command, int $exitCode): int
-    {
+    protected function terminate(
+        Input\InputInterface $input,
+        Output\OutputInterface $output,
+        ?CommandProvider\Reference $reference,
+        int $exitCode
+    ): int {
         if ($this->dispatcher !== null) {
             $dispatcher = $this->dispatcher;
             // Dispatch the `AfterExecuteEvent` event to all registered listeners.
             $event = $dispatcher->dispatch(
-                new Event\AfterExecuteEvent($input, $output, $command, $exitCode),
+                new Event\AfterExecuteEvent($input, $output, $reference?->configuration, $reference?->command, $exitCode),
             );
 
             $exitCode = $event->getExitCode();

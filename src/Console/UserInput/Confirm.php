@@ -25,10 +25,8 @@ final class Confirm extends AbstractUserInput
     protected array $acceptedValues = [
         'y' => true,
         'yes' => true,
-        'oui' => true,
         'n' => false,
         'no' => false,
-        'non' => false,
     ];
 
     /**
@@ -36,61 +34,48 @@ final class Confirm extends AbstractUserInput
      */
     public function prompt(string $message): bool
     {
-        $output = $message . ' ' . $this->message . ' ';
-
         $cursor = null;
         if ($this->position !== null) {
-            [$column, $row] = $this->position;
             $cursor = $this->output->getCursor();
             $cursor->save();
+            [$column, $row] = $this->position;
             $cursor->move($column, $row);
         }
 
-        $this->output->write($output);
-        $input = $this->input->getUserInput();
+        $this->output->write($message . ' ' . $this->message);
+        $input = Str\lowercase($this->input->getUserInput());
         if ('' === $input && '' !== $this->default) {
             $input = $this->default;
         }
 
-        if (!Iter\contains_key($this->acceptedValues, Str\lowercase($input))) {
+        if (!Iter\contains_key($this->acceptedValues, $input)) {
             return $this->prompt($message);
         }
 
         $cursor?->restore();
+        $this->output->writeLine('');
 
-        return $this->acceptedValues[Str\lowercase($input)];
+        return $this->acceptedValues[$input];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setDefault(string $default = ''): self
+    public function setDefault(string $default): self
     {
-        switch (Str\lowercase($default)) {
-            case 'y':
-            case 'yes':
-                $this->default = $default;
-                $message = ' [<fg=yellow>Y</>/n]: ';
-                break;
-            case 'n':
-            case 'no':
-                $this->default = $default;
-                $message = ' [y/<fg=yellow>N</>]: ';
-                break;
-            case 'non':
-                $this->default = $default;
-                $message = ' [o/<fg=yellow>N</>]: ';
-                break;
-            case 'oui':
-                $this->default = $default;
-                $message = ' [<fg=yellow>O</>/n]: ';
-                break;
-            default:
-                $message = ' [y/n]: ';
-                break;
+        $default = Str\lowercase($default);
+        $message = match ($default) {
+            'y', 'yes' => ' [<fg=green;bold;underline>Y</>/n]: ',
+            'n', 'no' => ' [y/<fg=green;bold;underline>N</>]: ',
+            default => null,
+        };
+
+        if (null === $message) {
+            return $this;
         }
 
         $this->message = $message;
+        $this->default = $default;
 
         return $this;
     }

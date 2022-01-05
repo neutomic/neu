@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Console\Feedback;
 
+use Neu\Console\Terminal;
 use Psl\Iter;
 use Psl\Str;
 
@@ -57,7 +58,7 @@ final class WaitFeedback extends AbstractFeedback
             'suffix' => $suffix,
         ];
 
-        $width = $this->terminal->getWidth();
+        $width = Terminal::getWidth();
         // format message
         // pad the output to the terminal width
         $output = Str\pad_right($this->insert($this->format, $variables), $width);

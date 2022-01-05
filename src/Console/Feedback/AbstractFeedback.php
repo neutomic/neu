@@ -85,10 +85,6 @@ abstract class AbstractFeedback implements FeedbackInterface
      */
     public function __construct(
         /**
-         * The `Terminal` instance.
-         */
-        protected Console\TerminalInterface      $terminal,
-        /**
          * The `Output` used for displaying the feedback information.
          */
         protected Console\Output\OutputInterface $output,

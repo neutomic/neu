@@ -16,24 +16,10 @@ use Neu\Console\Output;
 abstract class Event
 {
     public function __construct(
-        protected readonly Input\InputInterface   $input,
-        protected readonly Output\OutputInterface $output,
-        protected readonly ?Command\Command       $command,
+        public readonly Input\InputInterface   $input,
+        public readonly Output\OutputInterface $output,
+        public readonly ?Command\ConfigurationInterface $configuration,
+        public readonly ?Command\CommandInterface $command,
     ) {
-    }
-
-    public function getInput(): Input\InputInterface
-    {
-        return $this->input;
-    }
-
-    public function getOutput(): Output\OutputInterface
-    {
-        return $this->output;
-    }
-
-    public function getCommand(): ?Command\Command
-    {
-        return $this->command;
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neu\Console\Input;
 
@@ -8,11 +10,12 @@ use Psl\IO;
 use Psl\Regex;
 use Psl\Str;
 use Psl\Vec;
+
 use function function_exists;
 use function posix_isatty;
 use function sapi_windows_vt100_support;
 
-final class StreamHandleInput implements InputInterface
+final class HandleInput implements InputInterface
 {
     /**
      * Bag container holding all registered `Argument` objects.
@@ -64,7 +67,7 @@ final class StreamHandleInput implements InputInterface
      *
      * @param list<string> $args
      */
-    public function __construct(private readonly IO\ReadStreamHandleInterface $handle, array $args)
+    public function __construct(private readonly IO\ReadHandleInterface $handle, array $args)
     {
         $args = Vec\filter($args, static fn(string $arg): bool => '' !== $arg);
 
@@ -233,7 +236,7 @@ final class StreamHandleInput implements InputInterface
 
         if ($matches = Regex\first_match($value['raw'], "#\A\"(.+)\"$#")) {
             $value = $matches[1];
-        } else if ($matches = Regex\first_match($value['raw'], "#\A'(.+)'$#")) {
+        } elseif ($matches = Regex\first_match($value['raw'], "#\A'(.+)'$#")) {
             $value = $matches[1];
         } else {
             $value = $value['raw'];
@@ -457,19 +460,11 @@ final class StreamHandleInput implements InputInterface
     {
         $noninteractive = Env\get_var('NONINTERACTIVE');
         if ($noninteractive !== null) {
-            if (
-                $noninteractive === '1' ||
-                $noninteractive === 'true' ||
-                $noninteractive === 'yes'
-            ) {
+            if ($noninteractive === '1' || $noninteractive === 'true' || $noninteractive === 'yes') {
                 return false;
             }
 
-            if (
-                $noninteractive === '0' ||
-                $noninteractive === 'false' ||
-                $noninteractive === 'no'
-            ) {
+            if ($noninteractive === '0' || $noninteractive === 'false' || $noninteractive === 'no') {
                 return true;
             }
         }
@@ -481,15 +476,16 @@ final class StreamHandleInput implements InputInterface
         }
 
         // Generic
-        if (function_exists('posix_isatty') && @posix_isatty($this->handle->getStream())) {
-            return true;
-        }
+        if ($this->handle instanceof IO\StreamHandleInterface) {
+            if (function_exists('posix_isatty') && @posix_isatty($this->handle->getStream())) {
+                return true;
+            }
 
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return function_exists('sapi_windows_vt100_support') && @sapi_windows_vt100_support($this->handle->getStream());
+            if (DIRECTORY_SEPARATOR === '\\') {
+                return function_exists('sapi_windows_vt100_support') && @sapi_windows_vt100_support($this->handle->getStream());
+            }
         }
 
         return false;
     }
-
 }

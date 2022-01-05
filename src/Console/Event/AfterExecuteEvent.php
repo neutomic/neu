@@ -13,22 +13,13 @@ use Neu\Console\Output;
  */
 final class AfterExecuteEvent extends Event
 {
-    private int $exitCode;
-
-    public function __construct(Input\InputInterface $input, Output\OutputInterface $output, ?Command\Command $command, int $exitCode)
-    {
-        parent::__construct($input, $output, $command);
-
-        $this->exitCode = $exitCode;
-    }
-
-    public function getExitCode(): int
-    {
-        return $this->exitCode;
-    }
-
-    public function setExitCode(int $exitCode): void
-    {
-        $this->exitCode = $exitCode;
+    public function __construct(
+        public readonly Input\InputInterface   $input,
+        public readonly Output\OutputInterface $output,
+        public readonly ?Command\ConfigurationInterface $configuration,
+        public readonly ?Command\CommandInterface $command,
+        public int $exitCode,
+    ) {
+        parent::__construct($this->input, $this->output, $this->configuration, $this->command);
     }
 }

@@ -66,7 +66,7 @@ final class ProgressBarFeedback extends AbstractFeedback
             return;
         }
 
-        $width = $this->terminal->getWidth();
+        $width = Console\Terminal::getWidth();
         $size = $width - ($prefixLength + $suffixLength);
         if ($size < 0) {
             $size = 0;
@@ -101,7 +101,6 @@ final class ProgressBarFeedback extends AbstractFeedback
         }
 
         $this->output->erase();
-
         if ($finish) {
             $this->output->writeLine($output);
         } else {

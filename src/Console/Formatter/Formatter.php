@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Neu\Console\Formatter;
 
@@ -9,7 +11,9 @@ use Psl\Regex;
 use Psl\Str;
 use Psl\Str\Byte;
 use Psl\Vec;
+
 use function preg_match_all;
+
 use const PREG_OFFSET_CAPTURE;
 
 final class Formatter extends AbstractFormatter
@@ -29,8 +33,8 @@ final class Formatter extends AbstractFormatter
             'effects' => [],
         ],
         'warning' => [
-            'foreground' => Style\ForegroundColor::Yellow,
-            'background' => Style\BackgroundColor::Black,
+            'foreground' => Style\ForegroundColor::Black,
+            'background' => Style\BackgroundColor::Yellow,
             'effects' => [],
         ],
         'info' => [
@@ -94,8 +98,8 @@ final class Formatter extends AbstractFormatter
                 $tag = $matches[1][$i][0];
             } else {
                 $tag = $matches[3][$i][0] ?? '';
-
             }
+
             if (!$open && !$tag) {
                 // </>
                 $this->styleStack->pop();
@@ -104,7 +108,7 @@ final class Formatter extends AbstractFormatter
                 if ($style === null) {
                     [$decorated_text, $currentLineLength] = $this->applyCurrentStyle($text, $output, $width, $currentLineLength);
                     $output .= $decorated_text;
-                } else if ($open) {
+                } elseif ($open) {
                     $this->styleStack->push($style);
                 } else {
                     $this->styleStack->pop($style);
@@ -133,7 +137,7 @@ final class Formatter extends AbstractFormatter
             return ['', $currentLineLength];
         }
 
-        if (0 === $width) {
+        if (0 <= $width) {
             return [
                 $this->isDecorated() ? $this->styleStack->getCurrent()->apply($text) : $text,
                 $currentLineLength,
@@ -144,7 +148,7 @@ final class Formatter extends AbstractFormatter
             $text = Byte\trim_left($text);
         }
 
-        if ($currentLineLength > 0) {
+        if ($currentLineLength > 0 && $width > $currentLineLength) {
             $i = $width - $currentLineLength;
             $prefix = Byte\slice($text, 0, $i) . "\n";
             $text = Byte\slice($text, $i);
@@ -155,15 +159,13 @@ final class Formatter extends AbstractFormatter
         $matches = Regex\first_match($text, "~(\\n)$~");
         $text = $prefix . Regex\replace($text, '~([^\\n]{' . $width . '})\\ *~', "\$1\n");
         $text = Byte\trim_right($text, "\n") . ($matches[1] ?? '');
-        if (
-            !$currentLineLength && '' !== $current && "\n" !== Str\slice($current, -1)
-        ) {
+        if (!$currentLineLength && '' !== $current && "\n" !== Byte\slice($current, -1)) {
             $text = "\n" . $text;
         }
 
-        $lines = Str\split($text, "\n");
+        $lines = Byte\split($text, "\n");
         foreach ($lines as $line) {
-            $currentLineLength += Str\length($line);
+            $currentLineLength += Byte\length($line);
             if ($width <= $currentLineLength) {
                 $currentLineLength = 0;
             }
@@ -187,7 +189,7 @@ final class Formatter extends AbstractFormatter
             return $this->styles[$string];
         }
 
-        $attributes = Str\split(Str\trim(Str\replace($string, ';', ' ')), ' ');
+        $attributes = Byte\split(Byte\trim(Byte\replace($string, ';', ' ')), ' ');
         if (Iter\is_empty($attributes)) {
             return null;
         }
@@ -208,7 +210,7 @@ final class Formatter extends AbstractFormatter
 
                 if ('Random' === $background) {
                     $background = Iter\random(Vec\keys($backgrounds));
-                } else if (!Iter\contains_key($backgrounds, $background)) {
+                } elseif (!Iter\contains_key($backgrounds, $background)) {
                     throw new Console\Exception\InvalidCharacterSequenceException(
                         Str\format('Background "%s" does not exists.', $background),
                     );
@@ -227,8 +229,7 @@ final class Formatter extends AbstractFormatter
 
                 if ('Random' === $foreground) {
                     $foreground = Iter\random(Vec\keys($foregrounds));
-                } else if (
-                    !Iter\contains_key($foregrounds, $foreground)) {
+                } elseif (!Iter\contains_key($foregrounds, $foreground)) {
                     throw new Console\Exception\InvalidCharacterSequenceException(
                         Str\format('Foreground "%s" does not exists.', $foreground),
                     );

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neu\Console\UserInput;
 
-use Neu\Console\Output;
 use Psl\Iter;
 use Psl\Str;
 use Psl\Vec;
@@ -33,22 +32,13 @@ final class Menu extends AbstractUserInput
             $cursor->move($column, $row);
         }
 
-        $lines = Str\split($message, Output\OutputInterface::END_OF_LINE);
-        foreach ($lines as $i => $line) {
-            $this->output
-                ->writeLine(Str\format(
-                    '%s  <fg=green>%s</>',
-                    0 === $i ? Output\OutputInterface::END_OF_LINE : '',
-                    $line,
-                ));
-        }
-
+        $this->output->writeLine(Str\format('<fg=green>%s</>', $message));
         $this->output->writeLine('');
         foreach ($values as $index => $item) {
             $this->output->writeLine(Str\format('  [<fg=yellow>%d</>] %s', $index + 1, (string)$item));
         }
-
         $this->output->writeLine('');
+
         $result = $this->selection($values, $keys);
         $cursor?->restore();
 
