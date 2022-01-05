@@ -12,5 +12,13 @@ enum ForegroundColor: string
     case Magenta = '35';
     case Cyan = '36';
     case White = '37';
+    case Gray = '90';
+    case BrightRed = '91';
+    case BrightGreen = '92';
+    case BrightYellow = '93';
+    case BrightBlue = '94';
+    case BrightMagenta = '95';
+    case BrightCyan = '96';
+    case BrightWhite = '97';
     case Default = '39';
 }

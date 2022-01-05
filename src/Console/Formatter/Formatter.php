@@ -201,9 +201,21 @@ final class Formatter extends AbstractFormatter
         $foregrounds = Dict\reindex(Style\ForegroundColor::cases(), static fn(Style\ForegroundColor $enum) => $enum->name);
         $effects = Dict\reindex(Style\Effect::cases(), static fn(Style\Effect $enum) => $enum->name);
 
+        $parse_attribute_value = static function(string $attribute): string {
+            if (Byte\contains($attribute, '=')) {
+                [$_, $value] = Byte\split($attribute, '=', 2);
+            } else {
+                $value = $attribute;
+            }
+
+            $value = Byte\replace_every($value, ['"' => '', '\'' => '', '-' => ' ']);
+
+            return Str\join(Vec\map(Byte\split($value, ' '), Byte\capitalize(...)), '');
+        };
+
         foreach ($attributes as $attribute) {
             if (Byte\starts_with($attribute, 'bg=') || Byte\starts_with($attribute, 'background=')) {
-                $background = Byte\capitalize(Byte\replace_every((string)Iter\last(Byte\split($attribute, '=', 2)), ['"' => '', '\'' => '']));
+                $background = $parse_attribute_value($attribute);
                 if ('' === $background) {
                     continue;
                 }
@@ -222,7 +234,7 @@ final class Formatter extends AbstractFormatter
             }
 
             if (Byte\starts_with($attribute, 'fg=') || Byte\starts_with($attribute, 'foreground=')) {
-                $foreground = Byte\capitalize(Byte\replace_every((string)Iter\last(Byte\split($attribute, '=', 2)), ['"' => '', '\'' => '']));
+                $foreground = $parse_attribute_value($attribute);
                 if ('' === $foreground) {
                     continue;
                 }
@@ -240,7 +252,7 @@ final class Formatter extends AbstractFormatter
                 continue;
             }
 
-            $effect = Byte\capitalize($attribute);
+            $effect = $parse_attribute_value($attribute);
             if (!Iter\contains_key($effects, $effect)) {
                 continue;
             }
