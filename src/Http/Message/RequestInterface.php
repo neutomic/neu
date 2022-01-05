@@ -152,20 +152,45 @@ interface RequestInterface extends MessageInterface
     public function withoutCookie(string $name): static;
 
     /**
-     * Retrieve query parameters.
-     *
      * Retrieves the deserialized query parameters, if any.
      *
-     * Note: the query params might not be in sync with the URI.
+     * The keys represent the query parameter name as it will be sent over the wire, and
+     * each value is a list of strings associated with the query parameter.
+     *
+     * Note: the query parameters might not be in sync with the URI.
      *  If you need to ensure you are only getting the original
      *  values, you may need to parse the query string from `getUri()->getQuery()`.
      *
-     * @return list<array{non-empty-string, non-empty-string}>
+     * @return array<non-empty-string, non-empty-string>
      */
     public function getQueryParameters(): array;
 
     /**
-     * Return an instance with the specified query string pairs.
+     * Checks if a query parameter exists by the given case-insensitive name.
+     *
+     * @param non-empty-string $name Case-insensitive query parameter name.
+     *
+     * @return bool Returns true if any query parameter match the given name using a case-insensitive string comparison.
+     *              Returns false if no matching query parameter is found in the message.
+     */
+    public function hasQueryParameter(string $name): bool;
+
+    /**
+     * Retrieves a request query parameter value by the given case-insensitive name.
+     *
+     * This method returns the query parameter value of the given case-insensitive query parameter name.
+     *
+     * If the query parameter does not appear in the message, this method MUST return null.
+     *
+     * @param non-empty-string $name Case-insensitive query parameter field name.
+     *
+     * @return null|string The string values as provided for the given header.
+     *                     If the query parameter does not appear in the message, this method MUST return null.
+     */
+    public function getQueryParameter(string $name): ?string;
+
+    /**
+     * Return an instance with the specified query parameters.
      *
      * These values SHOULD remain immutable over the course of the incoming
      * request. They MAY be injected during instantiation, or MAY be derived
@@ -178,12 +203,15 @@ interface RequestInterface extends MessageInterface
      * immutability of the message, and MUST return an instance that has the
      * updated query parameters.
      *
-     * @param list<array{non-empty-string, non-empty-string}> $query A list of query name, value paris.
+     * @param array<non-empty-string, string> $query A dictionary of query parameters.
      */
     public function withQueryParameters(array $query): static;
 
     /**
-     * Return an instance with the specified query name/value.
+     * Return an instance with the provided value replacing the specified query parameter.
+     *
+     * While query parameter names are case-insensitive, the casing of the header will
+     * be preserved by this function, and returned from getQueryParameters().
      *
      * Adding a new query string parameter MUST NOT change the URI stored by the
      * request.
@@ -193,7 +221,7 @@ interface RequestInterface extends MessageInterface
      * updated query parameters.
      *
      * @param non-empty-string $name
-     * @param non-empty-string $value
+     * @param string $value
      */
     public function withQueryParameter(string $name, string $value): static;
 
