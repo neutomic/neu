@@ -166,26 +166,27 @@ class Application
             $input->parse();
 
             $command_name = $input->getActiveCommand();
-            if ($input->getFlag('ansi')->getValue() === 1) {
+            if ($input->getFlag('ansi')->exists()) {
                 $output->getFormatter()->setDecorated(true);
-            } elseif ($input->getFlag('no-ansi')->getValue() === 1) {
+            } elseif ($input->getFlag('no-ansi')->exists()) {
                 $output->getFormatter()->setDecorated(false);
             }
 
 
             $verbositySet = false;
-            if ($input->getFlag('quiet')->getValue() === 1) {
+            if ($input->getFlag('quiet')->exists()) {
                 $verbositySet = true;
                 Env\set_var('SHELL_VERBOSITY', (string) Output\Verbosity::Quite->value);
 
                 $output->setVerbosity(Output\Verbosity::Quite);
                 $input->setInteractive(false);
-            } elseif ($input->getFlag('no-interaction')->getValue() === 1) {
+            } elseif ($input->getFlag('no-interaction')->exists()) {
                 $input->setInteractive(false);
             }
 
             if (!$verbositySet) {
-                $verbosity = $input->getFlag('verbose')->getValue(0);
+                $verbose_flag = $input->getFlag('verbose');
+                $verbosity = $verbose_flag->exists() ? $verbose_flag->getValue() : 0;
                 $verbosity = match ($verbosity) {
                     0 => Output\Verbosity::Normal,
                     1 => Output\Verbosity::Verbose,
@@ -198,7 +199,7 @@ class Application
             }
 
             if ($command_name === null) {
-                if ($input->getFlag('version')->getValue() === 1) {
+                if ($input->getFlag('version')->exists()) {
                     $this->renderVersionInformation($output);
                 } else {
                     $this->renderHelpScreen($input, $output);
@@ -342,12 +343,12 @@ class Application
         $input->setOptions($options);
 
         $input->parse(true);
-        if ($input->getFlag('help')->getValue() === 1) {
+        if ($input->getFlag('help')->exists()) {
             $this->renderHelpScreen($input, $output, $reference);
             return 0;
         }
 
-        if ($input->getFlag('version')->getValue() === 1) {
+        if ($input->getFlag('version')->exists()) {
             $this->renderVersionInformation($output);
             return 0;
         }
