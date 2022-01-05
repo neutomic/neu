@@ -68,7 +68,7 @@ final class Cache implements CacheInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function delete(string $key): void
     {

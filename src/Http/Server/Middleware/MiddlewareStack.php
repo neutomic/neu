@@ -36,6 +36,9 @@ final class MiddlewareStack implements MiddlewareStackInterface
         return $next->handle($request);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function push(MiddlewareInterface $middleware): static
     {
         $this->stack->push($middleware);

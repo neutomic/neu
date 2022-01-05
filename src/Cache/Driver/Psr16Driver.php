@@ -16,7 +16,7 @@ final class Psr16Driver implements DriverInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function get(string $key): mixed
     {
@@ -36,7 +36,7 @@ final class Psr16Driver implements DriverInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function set(string $key, mixed $value, ?int $ttl = null): void
     {
@@ -56,7 +56,7 @@ final class Psr16Driver implements DriverInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function delete(string $key): void
     {
