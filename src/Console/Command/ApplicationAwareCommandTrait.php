@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Neu\Console\Command\Traits;
+namespace Neu\Console\Command;
 
 use Neu\Console\Application;
-use Neu\Console\Command;
 
 /**
  * @require-implements Command\ApplicationAwareCommandInterface

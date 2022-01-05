@@ -12,7 +12,7 @@ use Neu\Console\UserInput;
 
 abstract class Command implements ApplicationAwareCommandInterface
 {
-    use Traits\ApplicationAwareCommandTrait;
+    use ApplicationAwareCommandTrait;
     use Block\BlockTrait;
     use UserInput\UserInputTrait;
     use Feedback\FeedbackTrait;
