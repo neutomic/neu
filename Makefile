@@ -15,6 +15,15 @@ coding-standard-check:                                                          
 	./vendor/bin/php-cs-fixer fix --config=config/.php_cs.dist.php --dry-run
 	./vendor/bin/phpcs --basepath=. --standard=config/.phpcs.xml
 
+static-analysis:                                                                ## run static analysis checks
+	./vendor/bin/psalm.phar -c config/psalm.xml --show-info=true --no-cache
+
+type-coverage:                                                                  ## send static analysis type coverage metrics to https://shepherd.dev/
+	./vendor/bin/psalm.phar -c config/psalm.xml --shepherd --stats
+
+security-analysis:                                                              ## run static analysis security checks
+	./vendor/bin/psalm.phar -c config/psalm.xml --taint-analysis
+
 unit-tests:                                                                     ## run unit test suite
 	php vendor/bin/phpunit -c config/phpunit.xml.dist
 

@@ -6,6 +6,7 @@
 
 # composer vendor dir
 /vendor/
+/config/tools/vendor/
 
 # Mac DS_Store files
 .DS_Store
