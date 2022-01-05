@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Console\Input\Definition;
 
+use Neu\Console\Exception;
 use Psl\Str;
 
 /**
@@ -71,7 +72,7 @@ abstract class Definition implements DefinitionInterface
      */
     public function alias(string $alias): self
     {
-        if (Str\length($alias) > Str\length($this->name)) {
+        if (Str\Byte\length($alias) > Str\Byte\length($this->name)) {
             $this->alias = $this->name;
             $this->name = $alias;
         } else {
@@ -94,7 +95,7 @@ abstract class Definition implements DefinitionInterface
      */
     public function getFormattedName(string $name): string
     {
-        if (Str\length($name) === 1) {
+        if (Str\Byte\length($name) === 1) {
             return '-' . $name;
         }
 
@@ -118,19 +119,19 @@ abstract class Definition implements DefinitionInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieve the value of the `Definition` as specified by the user.
      *
-     * @param T|null $default - The default value to return if no value has been assigned.
+     * @throws Exception\MissingValueException If the definition has not been assigned a value.
      *
      * @return T
      */
-    public function getValue(mixed $default = null): mixed
+    public function getValue(): mixed
     {
         if ($this->exists) {
             return $this->value;
         }
 
-        return $default;
+        throw new Exception\MissingValueException(Str\format('The "%s" definition has not been assigned a value.', $this::class));
     }
 
     /**

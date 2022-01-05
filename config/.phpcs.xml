@@ -8,7 +8,7 @@
     <!-- // START: Enums are not supported -->
     <exclude-pattern>*/src/Console/Output/(Type|Verbosity).php</exclude-pattern>
     <exclude-pattern>*/src/Console/Output/Sequence/Erase.php</exclude-pattern>
-    <exclude-pattern>*/src/Console/Output/Sequence/Erase.php</exclude-pattern>
+    <exclude-pattern>*/src/Console/Input/Definition/Mode.php</exclude-pattern>
     <exclude-pattern>*/src/Console/Internal/Utility.php</exclude-pattern>
     <exclude-pattern>*/src/Console/Command/ExitCode.php</exclude-pattern>
     <exclude-pattern>*/src/Console/Formatter/Style/(Effect|BackgroundColor|ForegroundColor).php</exclude-pattern>

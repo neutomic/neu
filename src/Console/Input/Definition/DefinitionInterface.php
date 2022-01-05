@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Neu\Console\Input\Definition;
 
+use Neu\Console\Exception;
+
 /**
  * An `DefinitionInterface` defines the name and type of input that may be accepted
  * by the user.
@@ -46,9 +48,9 @@ interface DefinitionInterface
     /**
      * Retrieve the value of the `DefinitionInterface` as specified by the user.
      *
-     * @param T|null $default - The default value to return if no value has been assigned.
+     * @throws Exception\MissingValueException If the definition has not been assigned a value.
      *
      * @return T
      */
-    public function getValue(mixed $default = null): mixed;
+    public function getValue(): mixed;
 }
