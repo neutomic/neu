@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Neu\Http\Server\Middleware;
 
+use Neu\Http\Message\RequestInterface;
+use Neu\Http\Message\ResponseInterface;
 use Neu\Http\Server\Handler\HandlerInterface;
 use Neu\Http\Server\Handler\MiddlewareHandler;
 use Psl\DataStructure;
-use Neu\Http\Message\RequestInterface;
-use Neu\Http\Message\ResponseInterface;
 
 final class MiddlewareStack implements MiddlewareStackInterface
 {

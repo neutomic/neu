@@ -45,7 +45,7 @@ interface MessageInterface
      * exact case in which headers were originally specified.
      *
      * @return array<non-empty-string, non-empty-list<non-empty-string>> Returns a dictionary of the message's headers.
-     *  Each key MUST be a header name, and each value MUST be a list of strings for that header.
+     *                                                                   Each key MUST be a header name, and each value MUST be a list of strings for that header.
      */
     public function getHeaders(): array;
 
@@ -55,7 +55,7 @@ interface MessageInterface
      * @param non-empty-string $name Case-insensitive header field name.
      *
      * @return bool Returns true if any header names match the given header name using a case-insensitive string comparison.
-     *  Returns false if no matching header name is found in the message.
+     *              Returns false if no matching header name is found in the message.
      */
     public function hasHeader(string $name): bool;
 
@@ -69,7 +69,7 @@ interface MessageInterface
      * @param non-empty-string $name Case-insensitive header field name.
      *
      * @return null|non-empty-list<non-empty-string> An array of string values as provided for the given header.
-     *  If the header does not appear in the message, this method MUST return null.
+     *                                               If the header does not appear in the message, this method MUST return null.
      */
     public function getHeader(string $name): ?array;
 
@@ -89,7 +89,7 @@ interface MessageInterface
      * @param string $name Case-insensitive header field name.
      *
      * @return null|non-empty-string A string of values as provided for the given header concatenated together using a comma.
-     *  If the header does not appear in the message, this method MUST return null.
+     *                               If the header does not appear in the message, this method MUST return null.
      */
     public function getHeaderLine(string $name): ?string;
 
