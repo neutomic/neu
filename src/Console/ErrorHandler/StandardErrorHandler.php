@@ -10,6 +10,7 @@ use Neu\Console\Command;
 use Neu\Console\CommandProvider;
 use Neu\Console\Input;
 use Neu\Console\Output;
+use Psl\Filesystem;
 use Psl\Iter;
 use Psl\Str;
 use Psl\Vec;
@@ -81,18 +82,25 @@ final class StandardErrorHandler implements ErrorHandlerInterface
                 Output\Verbosity::VeryVerbose,
             );
 
+            $main_highlighted = false;
             foreach ($frames as $frame) {
-                if (Iter\contains_key($frame, 'class')) {
-                    $call = Str\format(' %s%s%s()', $frame['class'], $frame['type'], $frame['function']);
+                // render user exception and neu exception sources in different colors.
+                // as the error is usually coming from the user, not neu.
+                $file = $frame['file'];
+                if ($main_highlighted || Str\starts_with($file, Filesystem\get_directory(__DIR__))) {
+                    $trace_format = ' ↪ <fg=gray>%s</>';
                 } else {
-                    $call = Str\format(' %s()', $frame['function']);
+                    $trace_format = ' ↪ <fg=bright-green;underline;bold>%s</>';
+                    $main_highlighted = true;
                 }
 
-                $output->writeLine($call, Output\Verbosity::VeryVerbose);
-                $output->writeLine(Str\format(
-                    ' ↪ <fg=green>%s</>',
-                    $frame['file'] . (Iter\contains_key($frame, 'line') ? (':' . $frame['line']) : ''),
-                ), Output\Verbosity::VeryVerbose);
+                if (Iter\contains_key($frame, 'class')) {
+                    $output->writeLine(Str\format('%s%s%s()', $frame['class'], $frame['type'], $frame['function']), Output\Verbosity::VeryVerbose);
+                } else {
+                    $output->writeLine(Str\format(' %s()', $frame['function']), Output\Verbosity::VeryVerbose);
+                }
+
+                $output->writeLine(Str\format($trace_format, $file . (Iter\contains_key($frame, 'line') ? (':' . $frame['line']) : '')), Output\Verbosity::VeryVerbose);
                 $output->writeLine('', Output\Verbosity::VeryVerbose);
             }
         }
