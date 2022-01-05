@@ -16,7 +16,7 @@ coding-standard-check:                                                          
 	./vendor/bin/phpcs --basepath=. --standard=config/.phpcs.xml
 
 static-analysis:                                                                ## run static analysis checks
-	./vendor/bin/psalm.phar -c config/psalm.xml --show-info=true --no-cache
+	./vendor/bin/psalm.phar -c config/psalm.xml --no-cache
 
 type-coverage:                                                                  ## send static analysis type coverage metrics to https://shepherd.dev/
 	./vendor/bin/psalm.phar -c config/psalm.xml --shepherd --stats

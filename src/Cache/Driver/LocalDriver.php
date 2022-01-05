@@ -15,9 +15,13 @@ use function time;
 final class LocalDriver implements DriverInterface
 {
     /**
-     * @var array<string, mixed>
+     * @var array<non-empty-string, mixed>
      */
     private array $cache = [];
+
+    /**
+     * @var array<non-empty-string, int>
+     */
     private array $cacheExpiration = [];
 
     private readonly string $gcWatcher;
@@ -82,8 +86,8 @@ final class LocalDriver implements DriverInterface
             $this->cacheExpiration[$key] = time() + $ttl;
         }
 
-        if (null !== $this->size && count($this->cache) === $this->size) {
-            $this->delete(array_key_first($this->cache));
+        if (null !== $this->size && count($this->cache) === $this->size && $item = array_key_first($this->cache)) {
+            $this->delete($item);
         }
     }
 

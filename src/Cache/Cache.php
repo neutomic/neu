@@ -16,19 +16,28 @@ final class Cache implements CacheInterface
 
     public function __construct(private readonly Driver\DriverInterface $driver)
     {
-        $this->sequence = new Async\KeyedSequence(function (string $key, array $input): mixed {
-            try {
-                return $this->driver->get($key);
-            } catch (Exception\UnavailableItemException) {
-                [$computer, $ttl] = $input;
+        $this->sequence = new Async\KeyedSequence(
+            /**
+             * @param array{0: Closure(): mixed, 1: null|positive-int} $input
+             *
+             * @return mixed
+             */
+            function (string $key, array $input): mixed {
+                /** @var non-empty-string $key */
+                try {
+                    return $this->driver->get($key);
+                } catch (Exception\UnavailableItemException) {
+                    [$computer, $ttl] = $input;
 
-                $value = $computer();
+                    /** @var mixed $value */
+                    $value = $computer();
 
-                $this->driver->set($key, $value, $ttl);
+                    $this->driver->set($key, $value, $ttl);
 
-                return $value;
+                    return $value;
+                }
             }
-        });
+        );
     }
 
     /**

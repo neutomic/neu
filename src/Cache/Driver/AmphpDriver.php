@@ -28,6 +28,7 @@ final class AmphpDriver implements DriverInterface
             throw Exception\InvalidKeyException::forEmptyKey();
         }
 
+        /** @var mixed $value */
         $value = $this->cache->get($key);
         if (null === $value) {
             throw Exception\UnavailableItemException::for($key);

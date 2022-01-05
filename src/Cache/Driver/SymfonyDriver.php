@@ -27,7 +27,7 @@ final class SymfonyDriver implements DriverInterface
         }
 
         try {
-            return $this->cache->get($key, static function () use ($key) {
+            return $this->cache->get($key, static function () use ($key): never {
                 throw Exception\UnavailableItemException::for($key);
             });
         } catch (InvalidArgumentException $e) {
@@ -49,7 +49,7 @@ final class SymfonyDriver implements DriverInterface
         }
 
         try {
-            $this->cache->get($key, static function (CacheItemInterface $item) use ($value, $ttl) {
+            $this->cache->get($key, static function (CacheItemInterface $item) use ($value, $ttl): mixed {
                 $item->expiresAfter($ttl);
 
                 return $value;

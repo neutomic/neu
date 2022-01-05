@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.x-dev@">
+  <file src="../src/Cache/Driver/AmphpDriver.php">
+    <MissingThrowsDocblock occurrences="2">
+      <code>delete</code>
+      <code>get</code>
+    </MissingThrowsDocblock>
+    <TypeDoesNotContainType occurrences="3">
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="../src/Cache/Driver/LocalDriver.php">
+    <TypeDoesNotContainType occurrences="3">
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="../src/Cache/Driver/Psr16Driver.php">
+    <InvalidCatch occurrences="3"/>
+    <TypeDoesNotContainType occurrences="3">
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="../src/Cache/Driver/Psr6Driver.php">
+    <TypeDoesNotContainType occurrences="3">
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="../src/Cache/Driver/SymfonyDriver.php">
+    <TypeDoesNotContainType occurrences="3">
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+      <code>'' === $key</code>
+    </TypeDoesNotContainType>
+  </file>
+</files>
