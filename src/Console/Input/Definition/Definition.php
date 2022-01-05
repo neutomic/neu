@@ -131,7 +131,7 @@ abstract class Definition implements DefinitionInterface
             return $this->value;
         }
 
-        throw new Exception\MissingValueException(Str\format('The "%s" definition has not been assigned a value.', $this::class));
+        throw new Exception\MissingValueException(Str\format('The `%s` ( "%s" ) definition has not been assigned a value.', $this::class, $this->getName()));
     }
 
     /**

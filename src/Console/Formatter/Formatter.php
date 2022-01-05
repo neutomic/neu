@@ -201,7 +201,7 @@ final class Formatter extends AbstractFormatter
         $foregrounds = Dict\reindex(Style\ForegroundColor::cases(), static fn(Style\ForegroundColor $enum) => $enum->name);
         $effects = Dict\reindex(Style\Effect::cases(), static fn(Style\Effect $enum) => $enum->name);
 
-        $parse_attribute_value = static function(string $attribute): string {
+        $parse_attribute_value = static function (string $attribute): string {
             if (Byte\contains($attribute, '=')) {
                 [$_, $value] = Byte\split($attribute, '=', 2);
             } else {

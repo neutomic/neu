@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Neu\Console\Input;
 
-use Psl\IO;
 use Neu\Console\Exception;
+use Psl\IO;
 
 /**
  * The `Input` class contains all available `Flag`, `Argument`, `Option`, and
