@@ -37,22 +37,32 @@ final class Menu extends AbstractUserInput
         foreach ($values as $index => $item) {
             $this->output->writeLine(Str\format('  [<fg=yellow>%d</>] %s', $index + 1, (string)$item));
         }
-        $this->output->writeLine('');
 
-        $result = $this->selection($values, $keys);
+        if ($this->default !== '' && !$this->input->isInteractive()) {
+            $result = $this->acceptedValues[$this->default];
+        } else {
+            $this->output->writeLine('');
+            $result = $this->selection($values, $keys);
+        }
+
         $cursor?->restore();
 
         return $result;
     }
 
     /**
+     * @param array<string, string> $dictionary
      * @param array<int, string> $values
      * @param array<int, string> $keys
      */
-    private function selection(array $values, array $keys): string
+    private function selection(array $dictionary, array $values, array $keys): string
     {
         $this->output->write('<fg=green>↪</> ');
         $input = $this->input->getUserInput();
+        if ($this->default !== '' && $input !== '') {
+            return $dictionary[$this->default];
+        }
+
         $input = Str\to_int($input);
         if ($input !== null) {
             $input--;

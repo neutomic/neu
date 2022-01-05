@@ -43,7 +43,12 @@ final class Confirm extends AbstractUserInput
         }
 
         $this->output->write($message . ' ' . $this->message);
-        $input = Str\lowercase($this->input->getUserInput());
+        if ($this->default !== '' && !$this->input->isInteractive()) {
+            $input = $this->default;
+        } else {
+            $input = Str\lowercase($this->input->getUserInput());
+        }
+
         if ('' === $input && '' !== $this->default) {
             $input = $this->default;
         }
