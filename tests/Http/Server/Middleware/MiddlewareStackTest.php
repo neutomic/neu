@@ -48,6 +48,29 @@ final class MiddlewareStackTest extends TestCase
         static::assertSame($response, $stack->process($request, $handler));
     }
 
+    public function testStackCanBeReused(): void
+    {
+        $request = $this->createMock(RequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $handler = $this->createMock(HandlerInterface::class);
+        $middlewareOne = $this->createMock(MiddlewareInterface::class);
+        $middlewareTwo = $this->createMock(MiddlewareInterface::class);
+
+        $handler->expects(static::never())->method('handle');
+        $middlewareTwo->expects(static::exactly(2))->method('process')->willReturn($response);
+        $middlewareOne->expects(static::exactly(2))->method('process')->willReturnCallback(
+            static fn(RequestInterface $request, HandlerInterface $next): ResponseInterface => $next->handle($request)
+        );
+
+        $stack = new MiddlewareStack();
+        $stack
+            ->push($middlewareOne)
+            ->push($middlewareTwo);
+
+        static::assertSame($response, $stack->process($request, $handler));
+        static::assertSame($response, $stack->process($request, $handler));
+    }
+
     public function testHandlerIsCalledIfAllMiddlewareDelegate(): void
     {
         $request = $this->createMock(RequestInterface::class);

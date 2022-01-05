@@ -12,10 +12,14 @@ use Psl\DataStructure;
 
 final class MiddlewareStack implements MiddlewareStackInterface
 {
+    /**
+     * @var DataStructure\Stack<MiddlewareInterface>
+     */
     private DataStructure\Stack $stack;
 
     public function __construct()
     {
+        /** @var DataStructure\Stack<MiddlewareInterface> */
         $this->stack = new DataStructure\Stack();
     }
 
@@ -24,7 +28,8 @@ final class MiddlewareStack implements MiddlewareStackInterface
      */
     public function process(RequestInterface $request, HandlerInterface $next): ResponseInterface
     {
-        while ($middleware = $this->stack->pull()) {
+        $stack = clone $this->stack;
+        while ($middleware = $stack->pull()) {
             $next = new MiddlewareHandler($middleware, $next);
         }
 
