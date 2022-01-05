@@ -29,8 +29,8 @@ final class StandardErrorHandler implements ErrorHandlerInterface
         }
 
         $this->renderMessage($output, $exception);
-        $this->renderSource($output, $exception);
-        $this->renderTrace($output, $exception);
+        $source_highlighted = $this->renderSource($output, $exception);
+        $this->renderTrace($output, $exception, $source_highlighted);
 
         $code = $exception->getCode();
         if (is_string($code)) {
@@ -50,20 +50,22 @@ final class StandardErrorHandler implements ErrorHandlerInterface
         $block->display($exception->getMessage());
     }
 
-    private function renderSource(Output\OutputInterface $output, RootException $exception): void
+    private function renderSource(Output\OutputInterface $output, RootException $exception): bool
     {
-        $output->writeLine(
-            Str\format(
-                '- %s:%d%s',
-                $exception->getFile(),
-                $exception->getLine(),
-                Output\OutputInterface::END_OF_LINE,
-            ),
-            Output\Verbosity::Verbose,
-        );
+        if (!$this->isNeu($exception->getFile())) {
+            $output->writeLine(Str\format('- <fg=bright-green;underline;bold>%s:%d</>', $exception->getFile(), $exception->getLine()), Output\Verbosity::Verbose);
+            $output->writeLine('', Output\Verbosity::Verbose);
+
+            return true;
+        }
+
+        $output->writeLine(Str\format('- %s:%d', $exception->getFile(), $exception->getLine()), Output\Verbosity::Verbose);
+        $output->writeLine('', Output\Verbosity::Verbose);
+
+        return false;
     }
 
-    private function renderTrace(Output\OutputInterface $output, RootException $exception): void
+    private function renderTrace(Output\OutputInterface $output, RootException $exception, bool $source_highlighted): void
     {
         $frames = Vec\filter(
             Vec\map(
@@ -82,16 +84,15 @@ final class StandardErrorHandler implements ErrorHandlerInterface
                 Output\Verbosity::VeryVerbose,
             );
 
-            $main_highlighted = false;
             foreach ($frames as $frame) {
                 // render user exception and neu exception sources in different colors.
                 // as the error is usually coming from the user, not neu.
                 $file = $frame['file'];
-                if ($main_highlighted || Str\starts_with($file, Filesystem\get_directory(__DIR__))) {
+                if ($source_highlighted || $this->isNeu($file)) {
                     $trace_format = ' ↪ <fg=gray>%s</>';
                 } else {
                     $trace_format = ' ↪ <fg=bright-green;underline;bold>%s</>';
-                    $main_highlighted = true;
+                    $source_highlighted = true;
                 }
 
                 if (Iter\contains_key($frame, 'class')) {
@@ -104,5 +105,13 @@ final class StandardErrorHandler implements ErrorHandlerInterface
                 $output->writeLine('', Output\Verbosity::VeryVerbose);
             }
         }
+    }
+
+    /**
+     * Determine if the given file is part of Neu.
+     */
+    private function isNeu(string $file): bool
+    {
+        return Str\starts_with($file, Filesystem\get_directory(__DIR__));
     }
 }
