@@ -34,5 +34,7 @@ final class MiddlewareStack implements MiddlewareStackInterface
     public function push(MiddlewareInterface $middleware): static
     {
         $this->stack->push($middleware);
+
+        return $this;
     }
 }
