@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Neu\Http\Message;
 
 use InvalidArgumentException;
+use LogicException;
+use Neu\Http\Session\SessionInterface;
 
 interface RequestInterface extends MessageInterface
 {
@@ -127,7 +129,6 @@ interface RequestInterface extends MessageInterface
      */
     public function withCookies(array $cookies): static;
 
-
     /**
      * Return an instance with the specified cookie name/value.
      *
@@ -235,6 +236,36 @@ interface RequestInterface extends MessageInterface
      * @param non-empty-string $name
      */
     public function withoutQueryParameter(string $name): static;
+
+    /**
+     * Checks if the request has a session associated with it.
+     *
+     * @see getSession()
+     */
+    public function hasSession(): bool;
+
+    /**
+     * Retrieve the request session.
+     *
+     * Session will be request specific, and is mutable.
+     *
+     * @throws LogicException If the request has no session associated with it.
+     */
+    public function getSession(): SessionInterface;
+
+    /**
+     * Return an instance with the specified session instance.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated attribute.
+     *
+     * A null value provided for the session is equivalent to removing the session
+     * from the request.
+     *
+     * @see getSession()
+     */
+    public function withSession(SessionInterface $session): static;
 
     /**
      * Retrieve attributes derived from the request.
