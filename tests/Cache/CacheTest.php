@@ -45,8 +45,8 @@ final class CacheTest extends TestCase
     {
         $ref = new Psl\Ref(false);
         $computer = static function () use ($ref): string {
-            $ref->value = true;
             Psl\Async\sleep(0.02);
+            $ref->value = true;
 
             return 'azjezz';
         };
@@ -57,6 +57,20 @@ final class CacheTest extends TestCase
 
         $ref->value = false;
         $user = $cache->compute('user', $computer, ttl: 1);
+        static::assertSame('azjezz', $user);
+        static::assertFalse($ref->value);
+
+        $driver->delete('user');
+
+        $one = Psl\Async\run(static fn() => $cache->compute('user', $computer, ttl: 1));
+        Psl\Async\later();
+        $two = Psl\Async\run(static fn() => $cache->compute('user', $computer, ttl: 1));
+        $user = $one->await();
+        static::assertSame('azjezz', $user);
+        static::assertTrue($ref->value);
+
+        $ref->value = false;
+        $user = $two->await();
         static::assertSame('azjezz', $user);
         static::assertFalse($ref->value);
 
@@ -83,6 +97,34 @@ final class CacheTest extends TestCase
         $ref->value = 'b';
         $cache->delete('user'); // will wait until defer is finished.
         static::assertSame('c', $ref->value);
+    }
+
+    /**
+     * @dataProvider provideCache
+     */
+    public function testUpdate(Cache\Cache $cache, Cache\Driver\DriverInterface $_driver): void
+    {
+        $ref = new Psl\Ref(false);
+        $computer = static function () use ($ref): string {
+            $ref->value = true;
+            Psl\Async\sleep(0.02);
+
+            return 'azjezz';
+        };
+
+        $user = $cache->compute('user', $computer, ttl: 1);
+        static::assertSame('azjezz', $user);
+        static::assertTrue($ref->value);
+
+        $ref->value = false;
+        $user = $cache->update('user', $computer, ttl: 1);
+        static::assertSame('azjezz', $user);
+        static::assertTrue($ref->value);
+
+        $ref->value = false;
+        $user = $cache->compute('user', $computer, ttl: 1);
+        static::assertSame('azjezz', $user);
+        static::assertFalse($ref->value);
     }
 
     /**
