@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Neu\Configuration\Loader;
 
-use Neu\Configuration\Configuration;
-use Neu\Configuration\ConfigurationInterface;
+use Neu\Configuration\Container;
+use Neu\Configuration\ContainerInterface;
 use Neu\Configuration\Exception\InvalidConfigurationException;
 use Psl\Filesystem;
 use Psl\Str;
@@ -21,7 +21,7 @@ final class PHPFileLoader implements LoaderInterface
     /**
      * @inheritDoc
      */
-    public function load(mixed $resource): ConfigurationInterface
+    public function load(mixed $resource): ContainerInterface
     {
         /** @var array<string, mixed>|mixed $data */
         $data = (static function () use ($resource): mixed {
@@ -38,7 +38,7 @@ final class PHPFileLoader implements LoaderInterface
             ));
         }
 
-        return new Configuration($data);
+        return new Container($data);
     }
 
     /**

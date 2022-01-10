@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Neu\Configuration\Loader;
 
-use Neu\Configuration\Configuration;
-use Neu\Configuration\ConfigurationInterface;
+use Neu\Configuration\Container;
+use Neu\Configuration\ContainerInterface;
 use Neu\Configuration\Exception\InvalidConfigurationException;
 use Psl\File;
 use Psl\Filesystem;
@@ -25,7 +25,7 @@ final class JsonFileLoader implements LoaderInterface
      *
      * @psalm-suppress MissingThrowsDocblock
      */
-    public function load(mixed $resource): ConfigurationInterface
+    public function load(mixed $resource): ContainerInterface
     {
         $content = File\read($resource);
 
@@ -38,7 +38,7 @@ final class JsonFileLoader implements LoaderInterface
             );
         }
 
-        return new Configuration($data);
+        return new Container($data);
     }
 
     /**

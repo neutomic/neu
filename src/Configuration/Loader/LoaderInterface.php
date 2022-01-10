@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Configuration\Loader;
 
-use Neu\Configuration\ConfigurationInterface;
+use Neu\Configuration\ContainerInterface;
 use Neu\Configuration\Exception;
 
 /**
@@ -19,7 +19,7 @@ interface LoaderInterface
      *
      * @throws Exception\InvalidConfigurationException If loading the resource resulted in an invalid configuration value.
      */
-    public function load(mixed $resource): ConfigurationInterface;
+    public function load(mixed $resource): ContainerInterface;
 
     /**
      * Return whether this loader is capable of loading the given resource.
