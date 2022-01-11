@@ -11,7 +11,8 @@ use Psr\SimpleCache\InvalidArgumentException;
 final class Psr16Driver implements DriverInterface
 {
     public function __construct(
-        private readonly CacheInterface $cache
+        private readonly CacheInterface $cache,
+        private readonly string $scope = '',
     ) {
     }
 
@@ -25,11 +26,11 @@ final class Psr16Driver implements DriverInterface
         }
 
         try {
-            if (!$this->cache->has($key)) {
+            if (!$this->cache->has($this->createKey($key))) {
                 throw Exception\UnavailableItemException::for($key);
             }
 
-            return $this->cache->get($key);
+            return $this->cache->get($this->createKey($key));
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
@@ -49,7 +50,7 @@ final class Psr16Driver implements DriverInterface
         }
 
         try {
-            $this->cache->set($key, $value, $ttl);
+            $this->cache->set($this->createKey($key), $value, $ttl);
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
@@ -65,9 +66,19 @@ final class Psr16Driver implements DriverInterface
         }
 
         try {
-            $this->cache->delete($key);
+            $this->cache->delete($this->createKey($key));
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
+    }
+
+    /**
+     * @param non-empty-string $key
+     *
+     * @return non-empty-string
+     */
+    private function createKey(string $key): string
+    {
+        return '[' . $this->scope . ']=' . $key;
     }
 }

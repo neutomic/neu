@@ -11,7 +11,8 @@ use Psr\Cache\InvalidArgumentException;
 final class Psr6Driver implements DriverInterface
 {
     public function __construct(
-        private readonly CacheItemPoolInterface $pool
+        private readonly CacheItemPoolInterface $pool,
+        private readonly string $scope = '',
     ) {
     }
 
@@ -25,7 +26,7 @@ final class Psr6Driver implements DriverInterface
         }
 
         try {
-            $item = $this->pool->getItem($key);
+            $item = $this->pool->getItem($this->createKey($key));
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
@@ -51,7 +52,7 @@ final class Psr6Driver implements DriverInterface
         }
 
         try {
-            $item = $this->pool->getItem($key);
+            $item = $this->pool->getItem($this->createKey($key));
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
@@ -72,9 +73,19 @@ final class Psr6Driver implements DriverInterface
         }
 
         try {
-            $this->pool->deleteItem($key);
+            $this->pool->deleteItem($this->createKey($key));
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
+    }
+
+    /**
+     * @param non-empty-string $key
+     *
+     * @return non-empty-string
+     */
+    private function createKey(string $key): string
+    {
+        return '[' . $this->scope . ']=' . $key;
     }
 }

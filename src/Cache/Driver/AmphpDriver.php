@@ -16,6 +16,7 @@ final class AmphpDriver implements DriverInterface
      */
     public function __construct(
         private readonly Cache $cache,
+        private readonly string $scope = '',
     ) {
     }
 
@@ -29,7 +30,7 @@ final class AmphpDriver implements DriverInterface
         }
 
         /** @var mixed $value */
-        $value = $this->cache->get($key);
+        $value = $this->cache->get($this->createKey($key));
         if (null === $value) {
             throw Exception\UnavailableItemException::for($key);
         }
@@ -55,7 +56,7 @@ final class AmphpDriver implements DriverInterface
         }
 
         try {
-            $this->cache->set($key, $value, $ttl);
+            $this->cache->set($this->createKey($key), $value, $ttl);
         } catch (CacheException $e) {
             throw new Exception\InvalidValueException($e->getMessage(), previous: $e);
         }
@@ -70,6 +71,16 @@ final class AmphpDriver implements DriverInterface
             throw Exception\InvalidKeyException::forEmptyKey();
         }
 
-        $this->cache->delete($key);
+        $this->cache->delete($this->createKey($key));
+    }
+
+    /**
+     * @param non-empty-string $key
+     *
+     * @return non-empty-string
+     */
+    private function createKey(string $key): string
+    {
+        return '[' . $this->scope . ']=' . $key;
     }
 }

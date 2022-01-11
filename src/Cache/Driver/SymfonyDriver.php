@@ -13,8 +13,10 @@ use const INF;
 
 final class SymfonyDriver implements DriverInterface
 {
-    public function __construct(private readonly CacheInterface $cache)
-    {
+    public function __construct(
+        private readonly CacheInterface $cache,
+        private readonly string $scope = '',
+    ) {
     }
 
     /**
@@ -27,7 +29,7 @@ final class SymfonyDriver implements DriverInterface
         }
 
         try {
-            return $this->cache->get($key, static function () use ($key): never {
+            return $this->cache->get($this->createKey($key), static function () use ($key): never {
                 throw Exception\UnavailableItemException::for($key);
             });
         } catch (InvalidArgumentException $e) {
@@ -49,7 +51,7 @@ final class SymfonyDriver implements DriverInterface
         }
 
         try {
-            $this->cache->get($key, static function (CacheItemInterface $item) use ($value, $ttl): mixed {
+            $this->cache->get($this->createKey($key), static function (CacheItemInterface $item) use ($value, $ttl): mixed {
                 $item->expiresAfter($ttl);
 
                 return $value;
@@ -69,9 +71,19 @@ final class SymfonyDriver implements DriverInterface
         }
 
         try {
-            $this->cache->delete($key);
+            $this->cache->delete($this->createKey($key));
         } catch (InvalidArgumentException $e) {
             throw new Exception\InvalidKeyException($e->getMessage(), previous: $e);
         }
+    }
+
+    /**
+     * @param non-empty-string $key
+     *
+     * @return non-empty-string
+     */
+    private function createKey(string $key): string
+    {
+        return '[' . $this->scope . ']=' . $key;
     }
 }
