@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.x-dev@">
+<files psalm-version="5.x-dev@">
   <file src="../src/Cache/Driver/AmphpDriver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$ttl !== null &amp;&amp; 0 &gt;= $ttl</code>
+    </DocblockTypeContradiction>
     <MissingThrowsDocblock occurrences="2">
       <code>delete</code>
       <code>get</code>
@@ -12,6 +15,9 @@
     </TypeDoesNotContainType>
   </file>
   <file src="../src/Cache/Driver/LocalDriver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$ttl !== null &amp;&amp; 0 &gt;= $ttl</code>
+    </DocblockTypeContradiction>
     <TypeDoesNotContainType occurrences="3">
       <code>'' === $key</code>
       <code>'' === $key</code>
@@ -19,6 +25,9 @@
     </TypeDoesNotContainType>
   </file>
   <file src="../src/Cache/Driver/Psr16Driver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$ttl !== null &amp;&amp; 0 &gt;= $ttl</code>
+    </DocblockTypeContradiction>
     <InvalidCatch occurrences="3"/>
     <TypeDoesNotContainType occurrences="3">
       <code>'' === $key</code>
@@ -27,6 +36,9 @@
     </TypeDoesNotContainType>
   </file>
   <file src="../src/Cache/Driver/Psr6Driver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$ttl !== null &amp;&amp; 0 &gt;= $ttl</code>
+    </DocblockTypeContradiction>
     <TypeDoesNotContainType occurrences="3">
       <code>'' === $key</code>
       <code>'' === $key</code>
@@ -34,10 +46,43 @@
     </TypeDoesNotContainType>
   </file>
   <file src="../src/Cache/Driver/SymfonyDriver.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>$ttl !== null &amp;&amp; 0 &gt;= $ttl</code>
+    </DocblockTypeContradiction>
     <TypeDoesNotContainType occurrences="3">
       <code>'' === $key</code>
       <code>'' === $key</code>
       <code>'' === $key</code>
     </TypeDoesNotContainType>
+  </file>
+  <file src="../src/Database/AbstractionLayerConvenienceMethodsTrait.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$criteria</code>
+      <code>$criteria</code>
+    </ArgumentTypeCoercion>
+    <InvalidArgument occurrences="2">
+      <code>$values</code>
+      <code>$values</code>
+    </InvalidArgument>
+    <InvalidCast occurrences="1">
+      <code>$values</code>
+    </InvalidCast>
+    <MissingThrowsDocblock occurrences="1">
+      <code>execute</code>
+    </MissingThrowsDocblock>
+    <MixedAssignment occurrences="8">
+      <code>$criterion</code>
+      <code>$parameters[$name]</code>
+      <code>$parameters[$name]</code>
+      <code>$value</code>
+      <code>$value</code>
+      <code>$value</code>
+      <code>$values[$name]</code>
+      <code>$values[$name]</code>
+    </MixedAssignment>
+    <UnnecessaryVarAnnotation occurrences="2">
+      <code>SelectQueryInterface</code>
+      <code>UpdateQueryInterface</code>
+    </UnnecessaryVarAnnotation>
   </file>
 </files>

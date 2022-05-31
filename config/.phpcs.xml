@@ -10,6 +10,12 @@
     <arg name="parallel" value="75"/>
 
     <exclude-pattern>*/src/Http/Message/CookieSameSite.php</exclude-pattern>
+    <exclude-pattern>*/src/Database/OrderDirection.php</exclude-pattern>
+    <exclude-pattern>*/src/Database/TransactionIsolationLevel.php</exclude-pattern>
+    <exclude-pattern>*/src/Database/Query/QueryType.php</exclude-pattern>
+    <exclude-pattern>*/src/Database/Query/Expression/CompositionType.php</exclude-pattern>
+    <exclude-pattern>*/src/Database/Query/Expression/Operator.php</exclude-pattern>
+    <exclude-pattern>*/src/Database/Query/Builder/Internal/JoinKind.php</exclude-pattern>
 
     <rule ref="PSR1">
         <type>error</type>
