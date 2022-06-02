@@ -16,6 +16,7 @@
     <exclude-pattern>*/src/Database/Query/Expression/CompositionType.php</exclude-pattern>
     <exclude-pattern>*/src/Database/Query/Expression/Operator.php</exclude-pattern>
     <exclude-pattern>*/src/Database/Query/Builder/Internal/JoinType.php</exclude-pattern>
+    <exclude-pattern>*/src/Http/Session/CacheLimiter.php</exclude-pattern>
 
     <rule ref="PSR1">
         <type>error</type>

@@ -14,7 +14,7 @@ use Closure;
 interface CacheInterface
 {
     /**
-     * Gets a value associated with by its unique key.
+     * Gets a value associated with the given key.
      *
      * If the specified key doesn't exist, `$computer` will be used to compute the value.
      *
