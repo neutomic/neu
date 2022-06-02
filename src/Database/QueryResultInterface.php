@@ -7,11 +7,9 @@ namespace Neu\Database;
 interface QueryResultInterface
 {
     /**
-     * Retrieve the SQL query template used to retrieve this result.
-     *
-     * @return non-empty-string
+     * Return the next query result if available.
      */
-    public function getSqlTemplate(): string;
+    public function nextQueryResult(): ?QueryResultInterface;
 
     /**
      * Returns the actual rows returned by the successful query, each row including the typed values for each column.

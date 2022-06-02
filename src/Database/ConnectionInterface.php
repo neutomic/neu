@@ -30,6 +30,13 @@ interface ConnectionInterface
     public function query(string $query, array $parameters = []): QueryResultInterface;
 
     /**
+     * Retrieve a notifier for the given channel.
+     *
+     * @param non-empty-string $channel The channel identifier
+     */
+    public function getNotifier(string $channel): Notification\NotifierInterface;
+
+    /**
      * Get the timestamp of the last usage of this connection.
      *
      * @return int Unix timestamps in seconds.

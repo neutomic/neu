@@ -24,7 +24,7 @@ final class PreparedStatement implements PreparedStatementInterface
      */
     public function execute(array $parameters = []): QueryResultInterface
     {
-        return new QueryResult($this->statement->execute($parameters), $this->sql);
+        return new QueryResult($this->statement->execute($parameters));
     }
 
     /**

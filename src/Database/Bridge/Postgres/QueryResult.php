@@ -10,21 +10,22 @@ use Neu\Database\QueryResultInterface;
 
 final class QueryResult implements QueryResultInterface
 {
-    /**
-     * @param non-empty-string $sql
-     */
     public function __construct(
         private readonly Result $result,
-        private readonly string $sql,
     ) {
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getSqlTemplate(): string
+    public function nextQueryResult(): ?QueryResultInterface
     {
-        return $this->sql;
+        $next = $this->result->getNextResult();
+        if ($next === null) {
+            return null;
+        }
+
+        return new self($next);
     }
 
     /**

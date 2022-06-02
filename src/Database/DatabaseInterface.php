@@ -9,6 +9,16 @@ use Closure;
 interface DatabaseInterface extends AbstractionLayerInterface
 {
     /**
+     * Retrieve notification listener for the given channel.
+     *
+     * @param non-empty-string $channel The channel identifier
+     *
+     * @throws Exception\RuntimeException If the operation fails due to unexpected condition.
+     * @throws Exception\ConnectionException If the connection to the database is lost.
+     */
+    public function getListener(string $channel): Notification\ListenerInterface;
+
+    /**
      * Creates a transaction that can be used to execute queries in isolation.
      */
     public function createTransaction(TransactionIsolationLevel $isolation = TransactionIsolationLevel::ReadUncommitted): TransactionInterface;
