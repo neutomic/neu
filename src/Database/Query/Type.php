@@ -6,8 +6,8 @@ namespace Neu\Database\Query;
 
 enum Type
 {
-case Insert;
-case Select;
-case Update;
-case Delete;
-    }
+    case Insert;
+    case Select;
+    case Update;
+    case Delete;
+}

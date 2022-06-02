@@ -6,7 +6,7 @@ namespace Neu\Database\Query\Builder\Internal;
 
 enum JoinType: string
 {
-case Inner = 'INNER';
-case Left = 'LEFT';
-case Right = 'RIGHT';
-    }
+    case Inner = 'INNER';
+    case Left = 'LEFT';
+    case Right = 'RIGHT';
+}
