@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Database;
 
-interface AbstractionLayerInterface extends ConnectionInterface, IdentifierQuoterInterface
+interface AbstractionLayerInterface extends ConnectionInterface, IdentifierQuoterInterface, LiteralQuoterInterface
 {
     /**
      * Creates a query builder that can be used to execute queries through the abstraction layer.

@@ -14,13 +14,14 @@ use Error;
 use Neu\Database\ConnectionInterface;
 use Neu\Database\Exception;
 use Neu\Database\IdentifierQuoterInterface;
+use Neu\Database\LiteralQuoterInterface;
 use Neu\Database\PreparedStatementInterface;
 use Neu\Database\QueryResultInterface;
 use Psl\IO;
 
 use function defined;
 
-abstract class AbstractConnection implements ConnectionInterface, IdentifierQuoterInterface
+abstract class AbstractConnection implements ConnectionInterface, IdentifierQuoterInterface, LiteralQuoterInterface
 {
     public function __construct(
         private readonly Executor&Quoter $executor,
@@ -51,14 +52,14 @@ abstract class AbstractConnection implements ConnectionInterface, IdentifierQuot
         try {
             if ($parameters === []) {
                 // Allow multiple commands in a single query when not using prepared statement.
-                $result = new QueryResult($this->executor->query($query), $query);
+                $result = new QueryResult($this->executor->query($query));
             } else {
-                $result = new QueryResult($this->executor->execute($query, $parameters), $query);
+                $result = new QueryResult($this->executor->execute($query, $parameters));
             }
 
             if (defined('DATABASE_DEBUG_QUERIES')) {
                 /** @psalm-suppress MissingThrowsDocblock */
-                IO\write_error_line("\033[91m%s\033[m", $result->getSqlTemplate());
+                IO\write_error_line("\033[91m%s\033[m", $query);
             }
 
             return $result;
@@ -69,6 +70,14 @@ abstract class AbstractConnection implements ConnectionInterface, IdentifierQuot
         } catch (SqlException $e) {
             throw new Exception\RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getNotifier(string $channel): Notification\Notifier
+    {
+        return new Notification\Notifier($this->executor, $channel);
     }
 
     /**
@@ -98,11 +107,24 @@ abstract class AbstractConnection implements ConnectionInterface, IdentifierQuot
     /**
      * {@inheritDoc}
      */
-    public function quoteIdentifier(string $name): string
+    public function quoteIdentifier(string $identifier): string
     {
         try {
             /** @var non-empty-string */
-            return $this->executor->quoteName($name);
+            return $this->executor->quoteName($identifier);
+        } catch (Error $e) {
+            throw new Exception\ConnectionException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function quoteLiteral(string $literal): string
+    {
+        try {
+            /** @var non-empty-string */
+            return $this->executor->quoteString($literal);
         } catch (Error $e) {
             throw new Exception\ConnectionException($e->getMessage(), $e->getCode(), $e);
         }

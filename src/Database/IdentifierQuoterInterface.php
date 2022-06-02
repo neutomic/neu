@@ -9,11 +9,11 @@ interface IdentifierQuoterInterface
     /**
      * Quotes (escapes) the given string for use as a name or identifier in a query.
      *
-     * @param non-empty-string $name Unquoted identifier.
+     * @param non-empty-string $identifier Unquoted identifier.
      *
      * @throws Exception\ConnectionException If the connection to the database has been closed.
      *
      * @return non-empty-string Quoted identifier.
      */
-    public function quoteIdentifier(string $name): string;
+    public function quoteIdentifier(string $identifier): string;
 }
