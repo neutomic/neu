@@ -17,11 +17,6 @@ interface AbstractionLayerInterface extends ConnectionInterface, IdentifierQuote
     public function createExpressionBuilder(): Query\Expression\BuilderInterface;
 
     /**
-     * Creates a schema manager that can be used to inspect or change the database schema through the abstraction layer.
-     */
-    public function createSchemaManager(): Schema\SchemaManagerInterface;
-
-    /**
      * Insert one row into the given table.
      *
      * Example:

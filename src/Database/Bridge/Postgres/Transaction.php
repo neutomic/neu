@@ -6,13 +6,14 @@ namespace Neu\Database\Bridge\Postgres;
 
 use Amp\Postgres\Transaction as PostgresTransaction;
 use Amp\Sql\TransactionError;
+use Neu\Database\AbstractionLayerConvenienceMethodsTrait;
 use Neu\Database\Exception\TransactionException;
 use Neu\Database\TransactionInterface;
 use Neu\Database\TransactionIsolationLevel;
 
 final class Transaction extends AbstractConnection implements TransactionInterface
 {
-    use AbstractionLayerTrait;
+    use AbstractionLayerConvenienceMethodsTrait;
 
     public function __construct(
         private readonly PostgresTransaction $transaction,

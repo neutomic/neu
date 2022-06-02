@@ -11,6 +11,7 @@ use Amp\Sql\QueryError;
 use Amp\Sql\SqlException;
 use Amp\Sql\TransactionIsolationLevel as AmpTransactionIsolationLevel;
 use Closure;
+use Neu\Database\AbstractionLayerConvenienceMethodsTrait;
 use Neu\Database\DatabaseInterface;
 use Neu\Database\Exception;
 use Neu\Database\TransactionInterface;
@@ -19,7 +20,7 @@ use Throwable;
 
 final class Database extends AbstractConnection implements DatabaseInterface
 {
-    use AbstractionLayerTrait;
+    use AbstractionLayerConvenienceMethodsTrait;
 
     public function __construct(
         private readonly Connection $connection,
