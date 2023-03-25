@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Database\Bridge\Postgres;
 
-use Amp\Postgres\Transaction as PostgresTransaction;
+use Amp\Postgres\PostgresTransaction;
 use Amp\Sql\TransactionError;
 use Neu\Database\AbstractionLayerConvenienceMethodsTrait;
 use Neu\Database\Exception\TransactionException;

@@ -32,6 +32,12 @@ final class Resolver implements ResolverInterface
 
     /**
      * @inheritDoc
+     *
+     * @template T
+     *
+     * @param T $resource
+     *
+     * @return LoaderInterface<T>
      */
     public function resolve(mixed $resource): LoaderInterface
     {
@@ -41,6 +47,7 @@ final class Resolver implements ResolverInterface
                     $loader->setResolver($this);
                 }
 
+                /** @var LoaderInterface<T> */
                 return $loader;
             }
         }

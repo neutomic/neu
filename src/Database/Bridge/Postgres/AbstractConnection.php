@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Neu\Database\Bridge\Postgres;
 
-use Amp\Postgres\Executor;
+use Amp\Postgres\PostgresExecutor;
 use Amp\Postgres\QueryExecutionError;
-use Amp\Postgres\Quoter;
 use Amp\Sql\ConnectionException;
 use Amp\Sql\QueryError;
 use Amp\Sql\SqlException;
@@ -24,7 +23,7 @@ use function defined;
 abstract class AbstractConnection implements ConnectionInterface, IdentifierQuoterInterface, LiteralQuoterInterface
 {
     public function __construct(
-        private readonly Executor&Quoter $executor,
+        private readonly PostgresExecutor $executor,
     ) {
     }
 
@@ -34,7 +33,9 @@ abstract class AbstractConnection implements ConnectionInterface, IdentifierQuot
     public function prepare(string $query): PreparedStatementInterface
     {
         try {
-            return new PreparedStatement($this->executor->prepare($query), $query);
+            $statement = $this->executor->prepare($query);
+
+            return new PreparedStatement($statement, $query);
         } catch (QueryError $e) {
             throw new Exception\InvalidQueryException($e->getMessage(), $e->getCode(), $e);
         } catch (ConnectionException $e) {
@@ -91,9 +92,9 @@ abstract class AbstractConnection implements ConnectionInterface, IdentifierQuot
     /**
      * {@inheritDoc}
      */
-    public function isAlive(): bool
+    public function isClosed(): bool
     {
-        return $this->executor->isAlive();
+        return $this->executor->isClosed();
     }
 
     /**

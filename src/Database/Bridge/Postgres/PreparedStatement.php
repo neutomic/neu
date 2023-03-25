@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Database\Bridge\Postgres;
 
-use Amp\Sql\Statement;
+use Amp\Postgres\PostgresStatement;
 use Neu\Database\PreparedStatementInterface;
 use Neu\Database\QueryResultInterface;
 
@@ -14,7 +14,7 @@ final class PreparedStatement implements PreparedStatementInterface
      * @param non-empty-string $sql
      */
     public function __construct(
-        private readonly Statement $statement,
+        private readonly PostgresStatement $statement,
         private readonly string $sql,
     ) {
     }
@@ -46,8 +46,8 @@ final class PreparedStatement implements PreparedStatementInterface
     /**
      * {@inheritDoc}
      */
-    public function isAlive(): bool
+    public function isClosed(): bool
     {
-        return $this->statement->isAlive();
+        return $this->statement->isClosed();
     }
 }

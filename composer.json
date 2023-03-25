@@ -18,30 +18,29 @@
         }
     ],
     "require": {
-        "php": "~8.1.0",
+        "php": "~8.2.0",
         "ext-bcmath": "*",
         "ext-intl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-sodium": "*",
-        "amphp/amp": "v3.x-dev",
-        "azjezz/psl": "^2.0.2",
+        "amphp/amp": "^3.0.0",
+        "azjezz/psl": "^2.5.0",
         "psr/event-dispatcher": "^1.0",
         "amphp/postgres": "2.x-dev"
     },
     "require-dev": {
         "amphp/cache": "v2.x-dev",
-        "friendsofphp/php-cs-fixer": "^3.4.0",
-        "php-coveralls/php-coveralls": "^2.5",
-        "phpunit/phpunit": "^9.5.10",
+        "friendsofphp/php-cs-fixer": "^3.15.1",
+        "php-coveralls/php-coveralls": "^2.5.3",
+        "phpunit/phpunit": "^9.6.5",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "psr/simple-cache": "^1.0 || ^2.0 || ^3.0",
-        "squizlabs/php_codesniffer": "^3.6.2",
-        "symfony/cache-contracts": "^2.5 || ^3.0",
-        "symfony/cache": "^6.0",
-        "cache/array-adapter": "^1.1",
-        "psalm/phar": "^5.0.0",
-        "php-standard-library/psalm-plugin": "^1.1"
+        "squizlabs/php_codesniffer": "^3.7.2",
+        "symfony/cache-contracts": "^2.5.2 || ^3.0",
+        "symfony/cache": "^6.2.7",
+        "cache/array-adapter": "^1.2",
+        "psalm/phar": "^5.8.0"
     },
     "autoload": {
         "psr-4": {

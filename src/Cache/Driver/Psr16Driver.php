@@ -8,6 +8,9 @@ use Neu\Cache\Exception;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
+/**
+ * @psalm-suppress InvalidCatch
+ */
 final class Psr16Driver implements DriverInterface
 {
     public function __construct(

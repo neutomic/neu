@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Database\Bridge\Postgres;
 
-use Amp\Postgres\Connection;
+use Amp\Postgres\PostgresConnection;
 use Amp\Postgres\QueryExecutionError;
 use Amp\Sql\ConnectionException;
 use Amp\Sql\QueryError;
@@ -23,7 +23,7 @@ final class Database extends AbstractConnection implements DatabaseInterface
     use AbstractionLayerConvenienceMethodsTrait;
 
     public function __construct(
-        private readonly Connection $connection,
+        private readonly PostgresConnection $connection,
     ) {
         parent::__construct($this->connection);
     }
@@ -34,7 +34,9 @@ final class Database extends AbstractConnection implements DatabaseInterface
     public function getListener(string $channel): Notification\Listener
     {
         try {
-            return new Notification\Listener($this->connection->listen($channel), $channel);
+            $postgresListener = $this->connection->listen($channel);
+
+            return new Notification\Listener($postgresListener, $channel);
         } catch (ConnectionException $e) {
             throw new Exception\ConnectionException($e->getMessage(), $e->getCode(), $e);
         } catch (SqlException | QueryError | QueryExecutionError $e) {

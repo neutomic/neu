@@ -153,6 +153,7 @@ final class Container implements ContainerInterface
         $value = $this->get($index);
 
         try {
+            /** @var self<int> */
             return new self(Type\vec(Type\mixed())->coerce($value));
         } catch (Type\Exception\CoercionException $e) {
             throw new Exception\InvalidEntryException(Str\format('Entry "%s" value cannot be converted into a list.', $index), previous: $e);

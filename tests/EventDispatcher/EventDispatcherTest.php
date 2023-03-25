@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Neu\Tests\EventDispatcher;
 
-use Amp;
 use Neu\EventDispatcher\EventDispatcher;
 use Neu\EventDispatcher\Listener\ListenerInterface;
 use Neu\EventDispatcher\ListenerProvider\ListenerProvider;
@@ -131,9 +130,9 @@ final class EventDispatcherTest extends TestCase
 
         $dispatcher = new EventDispatcher($provider);
 
-        [$one, $two] = Amp\Future\all([
-            Amp\async(static fn() =>  $dispatcher->dispatch($event)),
-            Amp\async(static fn() =>  $dispatcher->dispatch($event)),
+        [$one, $two] = Async\concurrently([
+            static fn() =>  $dispatcher->dispatch($event),
+            static fn() =>  $dispatcher->dispatch($event),
         ]);
 
         static::assertSame($one, $event);

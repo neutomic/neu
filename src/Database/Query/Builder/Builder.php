@@ -19,6 +19,7 @@ final class Builder implements BuilderInterface
      */
     public function select(string $select, string ...$selects): Query\SelectQueryInterface
     {
+        /** @psalm-suppress ArgumentTypeCoercion - false positive */
         return new Internal\SelectQuery($this->dbal, [$select, ...$selects]);
     }
 

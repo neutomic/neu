@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neu\Database\Bridge\Postgres\Notification;
 
-use Amp\Postgres\Executor;
+use Amp\Postgres\PostgresExecutor;
 use Amp\Sql\ConnectionException;
 use Amp\Sql\SqlException;
 use Neu\Database\Bridge\Postgres\QueryResult;
@@ -18,7 +18,7 @@ final class Notifier implements NotifierInterface
      * @param non-empty-string $channel
      */
     public function __construct(
-        private readonly Executor $executor,
+        private readonly PostgresExecutor $executor,
         private readonly string $channel,
     ) {
     }

@@ -44,9 +44,9 @@ interface ConnectionInterface
     public function getLastUsedAt(): int;
 
     /**
-     * Check if the connection is still alive.
+     * Check if the connection is closed.
      */
-    public function isAlive(): bool;
+    public function isClosed(): bool;
 
     /**
      * Close the connection to the server.
